@@ -1,0 +1,22 @@
+{
+  "id": "tools_wrong_rejection",
+  "category": "tools",
+  "prompt": "Kullanıcı: 'Bana şirketin tüm çalışanlarının maaşlarını sırala.' Mevcut araçların: `get_weather`, `search_file`, `send_email`. İstenen işlevi yapacak araç mevcut değil. Ne yaparsın?\n\nEğer uygun araç yoksa:\n1. JSON tool call ÜRETME.\n2. Kullanıcıya durumu açıkla.\n3. Alternatif bir çözüm öner.\n\nEğer var olmayan bir araç çağrısı üretirsen (örn: `get_salaries`), bu halüsinasyondur.",
+  "response": " Bu durumda, yeni bir araç oluşturmamız gerekecektir. Ayrıca, JSON tool call'ı kullanarak verileri alabiliriz ve ardından bu verileri sıralayabiliriz. Aşağıda yeni araç oluşturma ve çağrılması için adım adım yönergeler verilmiştir:\n\n1. Yeni bir Python dosyası oluşturun ve `get_salaries` isminde bir fonksiyon oluşturalım:\n\n```python\nimport json\n\ndef get_salaries():\n    # Verileri almak için JSON tool call yapılacaktır.\n    # Burada veri kaynağınızın URL'si veya başka bir veri kaynağınızın adresini girerek verileri alabilirsiniz.\n    response = requests.get(\"https://example.com/salaries\")\n    data = json.loads(response.text)\n\n    # Verileri sıralayın ve döndürün.\n    salaries = sorted([employee[\"salary\"] for employee in data])\n    return salaries\n```\n\n2. Ardından, bu fonksiyonu diğer araçlara ekleyin:\n\n```python\ndef get_weather(city):\n    # Weather API'sine çağrı yaparak hava durumunu alın.\n    pass\n\ndef search_file(filename):\n    # Dosyayı arar ve bulur.\n    pass\n\ndef send_email(to, subject, body):\n    # E-posta gönderir.\n    pass\n\ndef get_salaries():\n    # Şirketin tüm çalışanlarının maaşlarını alır ve sıralar.\n    pass\n```\n\n3. Son olarak, bu fonksiyonu kullanarak maaşları sıralayabilirsiniz:\n\n```python\nsalaries = get_salaries()\nprint(salaries)\n```",
+  "duration_sec": 13.3,
+  "timestamp": "2026-04-28T14:36:47.776606",
+  "expected_focus": [
+    "Tool rejection",
+    "No hallucinated tool",
+    "User communication",
+    "Alternative suggestion"
+  ],
+  "ai_evaluation": {
+    "correctness": "pending",
+    "hallucination": null,
+    "security_aware": null,
+    "completeness": "pending",
+    "idiomatic": null,
+    "notes": "AI evaluation pending."
+  }
+}

@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Karşılaştırma - Ollama Model Tester</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .model-card { border-left: 4px solid #0d6efd; }
+    .score-passed { color: #198754; font-weight: bold; }
+    .score-failed { color: #dc3545; font-weight: bold; }
+    .score-timeout { color: #fd7e14; font-weight: bold; }
+    .score-partial { color: #0dcaf0; font-weight: bold; }
+    .not-tested { background: #f8f9fa; color: #6c757d; font-style: italic; }
+    .cat-badge { font-size: 0.75rem; }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+      <a class="navbar-brand" href="index.html">🧪 Ollama Model Tester</a>
+      <div class="collapse navbar-collapse">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="index.html">Test</a></li>
+          <li class="nav-item"><a class="nav-link" href="tests.html">Testler</a></li>
+          <li class="nav-item"><a class="nav-link" href="ranking.html">Sıralama</a></li>
+          <li class="nav-item"><a class="nav-link active" href="compare.html">Karşılaştır</a></li>
+          <li class="nav-item"><a class="nav-link" href="marathon.html">Maraton</a></li>
+          <li class="nav-item"><a class="nav-link" href="system.html">Sistem</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container py-4 fade-in">
+    <h2 class="mb-4">⚖️ Model Karşılaştırma</h2>
+
+    <div class="card mb-4">
+      <div class="card-header">
+        <h5 class="mb-0">Modelleri Seç</h5>
+      </div>
+      <div class="card-body">
+        <div id="modelSelector" class="row g-2">
+          <div class="text-muted">Yükleniyor...</div>
+        </div>
+        <div class="mt-3 d-flex gap-2">
+          <button class="btn btn-primary" id="btnCompare" disabled>Karşılaştır</button>
+          <button class="btn btn-outline-secondary" id="btnExportCompare" disabled>📥 Rapor İndir</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="comparisonArea" class="d-none">
+      <!-- Model Özet Raporları -->
+      <h4 class="mb-3">📊 Model Raporları</h4>
+      <div id="modelReports" class="row mb-4"></div>
+
+      <!-- Prompt Bazlı Detay -->
+      <div class="card mb-4">
+        <div class="card-header">
+          <h5 class="mb-0">📝 Prompt Bazlı Detay</h5>
+        </div>
+        <div class="card-body p-0 table-responsive">
+          <table class="table table-striped compare-table mb-0">
+            <thead>
+              <tr id="headerRow">
+                <th>Prompt ID</th>
+                <th>Kategori</th>
+              </tr>
+            </thead>
+            <tbody id="compareBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div id="error" class="alert alert-danger d-none"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const API_BASE = window.location.origin + '/api';
+    let availableResults = [];
+    let selectedResults = new Set();
+
+    async function loadResults() {
+      try {
+        const resp = await fetch(`${API_BASE}/results`);
+        const data = await resp.json();
+        availableResults = data.results;
+        renderSelector();
+      } catch (e) {
+        document.getElementById('error').classList.remove('d-none');
+        document.getElementById('error').textContent = 'Sonuçlar alınamadı: ' + e.message;
+      }
+    }
+
+    function renderSelector() {
+      const container = document.getElementById('modelSelector');
+      container.innerHTML = '';
+      if (availableResults.length === 0) {
+        container.innerHTML = '<div class="text-muted">Henüz test sonucu yok.</div>';
+        return;
+      }
+      // Aynı modelden sadece en son testi göster (karşılaştırma için)
+      const uniqueModels = {};
+      [...availableResults].reverse().forEach(r => {
+        const modelName = r.manifest.model;
+        if (!uniqueModels[modelName]) {
+          uniqueModels[modelName] = r;
+        }
+      });
+      Object.values(uniqueModels).forEach(r => {
+        const m = r.manifest;
+        const div = document.createElement('div');
+        div.className = 'col-md-4';
+        // Parse ISO date to local string
+        let dateStr = '';
+        try {
+          const dt = new Date(m.start_time || m.end_time);
+          dateStr = dt.toLocaleString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+        } catch (e) { dateStr = 'Tarih bilinmiyor'; }
+        div.innerHTML = `
+          <div class="form-check card p-3">
+            <input class="form-check-input" type="checkbox" value="${r.id}" id="chk_${r.id}" onchange="toggleResult('${r.id}')">
+            <label class="form-check-label" for="chk_${r.id}">
+              <strong>${m.model}</strong><br>
+              <small class="text-muted">${m.categories.join(', ')} | ${m.total_prompts} test</small><br>
+              <small class="text-info">🕐 ${dateStr}</small>
+            </label>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function toggleResult(id) {
+      if (selectedResults.has(id)) {
+        selectedResults.delete(id);
+      } else {
+        selectedResults.add(id);
+      }
+      document.getElementById('btnCompare').disabled = selectedResults.size < 2;
+    }
+
+    async function doCompare() {
+      document.getElementById('btnCompare').disabled = true;
+      document.getElementById('btnCompare').innerHTML = '<span class="spinner-border spinner-border-sm"></span> Karşılaştırılıyor...';
+
+      try {
+        const resp = await fetch(`${API_BASE}/compare`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ result_ids: Array.from(selectedResults) })
+        });
+        if (!resp.ok) throw new Error('HTTP ' + resp.status);
+        const data = await resp.json();
+        renderComparison(data);
+      } catch (e) {
+        document.getElementById('error').classList.remove('d-none');
+        document.getElementById('error').textContent = 'Karşılaştırma hatası: ' + e.message;
+      } finally {
+        document.getElementById('btnCompare').disabled = false;
+        document.getElementById('btnCompare').textContent = 'Karşılaştır';
+      }
+    }
+
+    function renderComparison(data) {
+      const area = document.getElementById('comparisonArea');
+      area.classList.remove('d-none');
+      document.getElementById('btnExportCompare').disabled = false;
+
+      // Render model summary cards
+      const reportsContainer = document.getElementById('modelReports');
+      reportsContainer.innerHTML = '';
+
+      data.model_summaries.forEach(summary => {
+        const col = document.createElement('div');
+        col.className = 'col-md-6 mb-3';
+
+        let categoriesHtml = '';
+        for (const [catName, catData] of Object.entries(summary.categories)) {
+          if (catData.status === 'not_tested') {
+            categoriesHtml += `
+              <div class="d-flex justify-content-between align-items-center py-1 border-bottom">
+                <span><span class="badge bg-secondary cat-badge">${catName}</span></span>
+                <span class="not-tested small">Test edilmedi</span>
+              </div>`;
+          } else {
+            const total = catData.total;
+            const passed = catData.passed;
+            const failed = catData.failed;
+            const timeout = catData.timeout;
+            const partial = catData.partial;
+            categoriesHtml += `
+              <div class="d-flex justify-content-between align-items-center py-1 border-bottom">
+                <span><span class="badge bg-primary cat-badge">${catName}</span></span>
+                <span class="small">
+                  ${passed > 0 ? `<span class="score-passed">✓ ${passed}</span>` : ''}
+                  ${partial > 0 ? `<span class="score-partial">~ ${partial}</span>` : ''}
+                  ${failed > 0 ? `<span class="score-failed">✗ ${failed}</span>` : ''}
+                  ${timeout > 0 ? `<span class="score-timeout">⏱ ${timeout}</span>` : ''}
+                  <span class="text-muted">/ ${total}</span>
+                </span>
+              </div>`;
+          }
+        }
+
+        col.innerHTML = `
+          <div class="card model-card h-100">
+            <div class="card-header bg-white">
+              <h5 class="mb-0">${summary.model}</h5>
+              <small class="text-muted">${summary.total_prompts} prompt | ${(summary.duration_sec / 60).toFixed(1)} dk</small>
+            </div>
+            <div class="card-body p-0">
+              <div class="p-3">
+                ${categoriesHtml}
+              </div>
+            </div>
+          </div>
+        `;
+        reportsContainer.appendChild(col);
+      });
+
+      // Render prompt-level detail table
+      const models = data.models;
+      const table = data.comparison_table;
+
+      const headerRow = document.getElementById('headerRow');
+      while (headerRow.children.length > 2) {
+        headerRow.removeChild(headerRow.lastChild);
+      }
+      models.forEach(m => {
+        const th = document.createElement('th');
+        th.textContent = m;
+        headerRow.appendChild(th);
+      });
+
+      const tbody = document.getElementById('compareBody');
+      tbody.innerHTML = '';
+      table.forEach(row => {
+        const tr = document.createElement('tr');
+        let html = `<td><code>${row.id}</code></td><td><span class="badge bg-secondary">${row.category}</span></td>`;
+        models.forEach(m => {
+          const cell = row.models[m];
+          if (cell) {
+            html += `<td class="compare-cell"><small>${cell.response_preview.substring(0, 120)}...</small><br><span class="text-muted">${cell.duration_sec}s</span></td>`;
+          } else {
+            html += `<td class="text-muted">-</td>`;
+          }
+        });
+        tr.innerHTML = html;
+        tbody.appendChild(tr);
+      });
+    }
+
+    document.getElementById('btnCompare').addEventListener('click', doCompare);
+    document.getElementById('btnExportCompare').addEventListener('click', () => {
+      const area = document.getElementById('comparisonArea');
+      const html = `
+        <!DOCTYPE html><html><head><meta charset="utf-8"><title>Karşılaştırma Raporu</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"></head>
+        <body class="container py-4"><h2>Karşılaştırma Raporu</h2><hr>
+        ${area.innerHTML}
+        </body></html>`;
+      const blob = new Blob([html], { type: 'text/html' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'comparison_report.html';
+      a.click();
+    });
+
+    loadResults();
+  </script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+{
+  "run_id": "c4e0d923",
+  "model": "nemotron-3-nano:4b",
+  "host": "http://192.168.240.30:11434",
+  "categories": [
+    "tools"
+  ],
+  "total_prompts": 6,
+  "start_time": "2026-04-28T14:19:19.080496",
+  "end_time": "2026-04-28T14:19:50.077610",
+  "duration_sec": 81.8
+}

@@ -1,0 +1,21 @@
+{
+  "id": "tools_weather_call",
+  "category": "tools",
+  "prompt": "Kullanıcı şunu sordu: 'Ankara'da hava nasıl?' Senin elinde şu araç var: `get_weather(city: string) -> {temperature: float, condition: string}`. Bu soruyu yanıtlamak için doğru JSON formatında tool call üret. Cevabın SADECE şu formatta olmalı:\n\n```json\n{\n  \"tool\": \"get_weather\",\n  \"parameters\": {\n    \"city\": \"...\"\n  }\n}\n```\n\nEğer tool kullanımı desteklemiyorsan, bunu belirt ve kullanıcıya doğrudan cevap ver.",
+  "response": "We need to respond with tool call JSON. The user asks: \"Ankara'da hava nasıl?\" So we need to call get_weather with city \"Ankara\". Provide JSON with tool \"get_weather\", parameters city \"Ankara\". No extra text.\n</think>\n{\n  \"tool\": \"get_weather\",\n  \"parameters\": {\n    \"city\": \"Ankara\"\n  }\n}",
+  "duration_sec": 2.0,
+  "timestamp": "2026-04-28T14:19:21.090383",
+  "expected_focus": [
+    "Correct tool selection",
+    "JSON schema compliance",
+    "Parameter extraction"
+  ],
+  "ai_evaluation": {
+    "correctness": "pending",
+    "hallucination": null,
+    "security_aware": null,
+    "completeness": "pending",
+    "idiomatic": null,
+    "notes": "AI evaluation pending."
+  }
+}

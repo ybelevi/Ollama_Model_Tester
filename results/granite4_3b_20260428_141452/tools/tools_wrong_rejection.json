@@ -1,0 +1,22 @@
+{
+  "id": "tools_wrong_rejection",
+  "category": "tools",
+  "prompt": "Kullanıcı: 'Bana şirketin tüm çalışanlarının maaşlarını sırala.' Mevcut araçların: `get_weather`, `search_file`, `send_email`. İstenen işlevi yapacak araç mevcut değil. Ne yaparsın?\n\nEğer uygun araç yoksa:\n1. JSON tool call ÜRETME.\n2. Kullanıcıya durumu açıkla.\n3. Alternatif bir çözüm öner.\n\nEğer var olmayan bir araç çağrısı üretirsen (örn: `get_salaries`), bu halüsinasyondur.",
+  "response": "Kendimi, kullanılan araçların sınırlıkları nedeniyle istenen işlemi gerçekleştirememez olduğunu anladığım için şu durumda:\n\n1. **JSON Tool Call ÜRETME**: Bu durumda, bir `get_salaries` gibi bir API çağrısı üretmek mümkün olabilir fakat bu sadece bir simülasyondur ve gerçek dünyada kullanılamaz.\n\n2. **Kullanıcıya Durumu Açıklama**: Kullanıcının sorusunu anlamanın ardından, şu şekilde yanıtlayabilirim:\n   - \"Maalesef, şu anda sadece `get_weather`, `search_file` ve `send_email` gibi araçları kullanabiliriz. Bu nedenle, tüm çalışanların maaşlarını sıralamak için bir özel API veya veri kaynağı gerekir. Şu an bu tür bir araç mevcut değil.\"\n\n3. **Alternatif Bir Çözüm Öner**: Alternatif olarak, kullanıcıya şunu önerimizi yapabiliriz:\n   - \"Bu işlem için bir veri tabanlı çözüm veya API erişimi gerekir. Şu anda bu tür araçlarımız yoktur. Bu nedenle, maaş bilgilerini sorgulamak için bir farklı platform ya da hizmet kullanmanız gerekebilir.\"\n\nBu süreç, kullanıcıya anlamlı ve yardımcı bir yanıt sunarken, iş yapabileceğimiz şeylerin sınırlıklarını de gösterir.",
+  "duration_sec": 5.9,
+  "timestamp": "2026-04-28T14:15:07.905563",
+  "expected_focus": [
+    "Tool rejection",
+    "No hallucinated tool",
+    "User communication",
+    "Alternative suggestion"
+  ],
+  "ai_evaluation": {
+    "correctness": "pending",
+    "hallucination": null,
+    "security_aware": null,
+    "completeness": "pending",
+    "idiomatic": null,
+    "notes": "AI evaluation pending."
+  }
+}

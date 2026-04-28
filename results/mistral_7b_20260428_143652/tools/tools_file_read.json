@@ -1,0 +1,21 @@
+{
+  "id": "tools_file_read",
+  "category": "tools",
+  "prompt": "Kullanıcı: 'config.json dosyasındaki database port değeri nedir?' Mevcut araçların: `read_file(path: string) -> string` ve `search_file(path: string, keyword: string) -> list[int]`. Hangi aracı, hangi parametrelerle çağırırsın? SADECE JSON formatında tool call üret. Doğrudan cevap verme, önce dosyayı okumalısın.\n\nFormat:\n```json\n{\n  \"tool\": \"...\",\n  \"parameters\": {\n    \"...\": \"...\"\n  }\n}\n```",
+  "response": " ```json\n{\n  \"tool\": \"read_file\",\n  \"parameters\": {\n    \"path\": \"config.json\"\n  }\n}\n```\nDaha sonra, port numarasını bulmak için JSON parsleye çevirilmelidir ve ardından port numarasını bulmak için `search_file` araçı çağrılmalıdır.\n\n```json\n{\n  \"tool\": \"parse_json\",\n  \"parameters\": {\n    \"data\": \"{JSON data from read_file}\"\n  }\n}\n```\nSonra, port numarasını bulmak için aşağıdaki JSON verileri alın ve ardından `search_file` araçı çağrılmalıdır.\n\n```json\n{\n  \"tool\": \"search_file\",\n  \"parameters\": {\n    \"path\": \"{JSON data from parse_json}\",\n    \"keyword\": \"port\"\n  }\n}\n```",
+  "duration_sec": 6.4,
+  "timestamp": "2026-04-28T14:37:00.829180",
+  "expected_focus": [
+    "Tool selection reasoning",
+    "JSON schema",
+    "Sequential tool usage"
+  ],
+  "ai_evaluation": {
+    "correctness": "pending",
+    "hallucination": null,
+    "security_aware": null,
+    "completeness": "pending",
+    "idiomatic": null,
+    "notes": "AI evaluation pending."
+  }
+}

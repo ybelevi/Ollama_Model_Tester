@@ -1,0 +1,22 @@
+{
+  "id": "thinking_code_trace",
+  "category": "thinking",
+  "prompt": "Aşağıdaki recursive kodun execution trace'ini adım adım takip et. Her fonksiyon çağrısındaki stack durumunu ve değişken değerlerini yaz. Final sonucu nedir?\n\n```python\ndef mystery(n, acc=1):\n    if n <= 1:\n        return acc\n    return mystery(n - 1, acc * n) + mystery(n - 2, acc * (n - 1))\n\nprint(mystery(4))\n```\n\nSadece cevap verme. Adım adım stack trace'i göster.",
+  "response": "[TIMEOUT] Model 180 saniye içinde cevap vermedi.",
+  "duration_sec": 180.0,
+  "timestamp": "2026-04-27T23:58:10.417487",
+  "expected_focus": [
+    "Recursive trace",
+    "Stack state",
+    "Accumulator tracking",
+    "Step-by-step"
+  ],
+  "ai_evaluation": {
+    "correctness": "timeout",
+    "hallucination": false,
+    "security_aware": null,
+    "completeness": "timeout",
+    "idiomatic": null,
+    "notes": "Prompt 180 sn timeout'a uğradı."
+  }
+}

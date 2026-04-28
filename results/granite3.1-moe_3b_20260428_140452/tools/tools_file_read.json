@@ -1,0 +1,21 @@
+{
+  "id": "tools_file_read",
+  "category": "tools",
+  "prompt": "Kullanıcı: 'config.json dosyasındaki database port değeri nedir?' Mevcut araçların: `read_file(path: string) -> string` ve `search_file(path: string, keyword: string) -> list[int]`. Hangi aracı, hangi parametrelerle çağırırsın? SADECE JSON formatında tool call üret. Doğrudan cevap verme, önce dosyayı okumalısın.\n\nFormat:\n```json\n{\n  \"tool\": \"...\",\n  \"parameters\": {\n    \"...\": \"...\"\n  }\n}\n```",
+  "response": "Kullanıcı, `config.json` dosyasında bulunan `database_port` değişkeni, JSON formatında bir araç olarak çağırır. Aşağıdaki Python kodu, `read_file(path: str) -> int` aracı ve `search_file(path: str, keyword: str) -> list[int]` parametrelerle çağrılabilir.\n\n```python\nimport json\n\ndef read_config(path: str) -> int:\n    \"\"\"\n    JSON formatta bir dosya okumak için kullanılır.\n\n    :param path: JSON dosyasının adresi\n    :return: dosya içerisinde bulunan değer (port numarası)\n    \"\"\"\n    with open(path, 'r') as file:\n        config = json.load(file)\n    \n    return config['database_port']\n\ndef search_config(path: str, keyword: str) -> list[int]:\n    \"\"\"\n    JSON formatta bir dosya okumak için kullanılır.\n\n    :param path: JSON dosyasının adresi\n    :param keyword: Araçın parametresi\n    :return: dosya içerisinde bulunan değerler (port numaralar) listesi\n    \"\"\"\n    with open(path, 'r') as file:\n        config = json.load(file)\n    \n    return [value for key, value in config.items() if keyword in key or keyword in str(value)]\n```\n\nBu araçlar, JSON formatta bir dosya okumak için kullanılabilir. `read_config` aracı, JSON dosyasının adresini girerek değer (port numarası) alır. `search_config` aracı, JSON dosyasının adresini girerek keyword'leri içerir. Araçlar, parametrelerle çağrılabilir ve JSON formatta bir dosya okumak için kullanılabilir.",
+  "duration_sec": 3.2,
+  "timestamp": "2026-04-28T14:04:56.840100",
+  "expected_focus": [
+    "Tool selection reasoning",
+    "JSON schema",
+    "Sequential tool usage"
+  ],
+  "ai_evaluation": {
+    "correctness": "pending",
+    "hallucination": null,
+    "security_aware": null,
+    "completeness": "pending",
+    "idiomatic": null,
+    "notes": "AI evaluation pending."
+  }
+}

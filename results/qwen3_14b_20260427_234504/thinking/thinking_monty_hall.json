@@ -1,0 +1,22 @@
+{
+  "id": "thinking_monty_hall",
+  "category": "thinking",
+  "prompt": "Monty Hall problemini adım adım analiz et:\n\n1. 3 kapı var (A, B, C). Birinin arkasında araba, diğer ikisinin arkasında keçi.\n2. Yarışmacı A kapısını seçiyor.\n3. Sunucu (Monty), B veya C kapılarından birini açıyor ve keçi olduğunu gösteriyor.\n4. Yarışmacıya 'Seçimini değiştirmek ister misin?' diye soruluyor.\n\nSeçimi değiştirmek yarışmacı için avantajlı mı? Her adımdaki olasılıkları hesapla. Cevabını olasılık teorisine dayandır. 'Şans işi' deme, matematiksel ispat istiyorum.",
+  "response": "[TIMEOUT] Model 180 saniye içinde cevap vermedi.",
+  "duration_sec": 180.0,
+  "timestamp": "2026-04-27T23:49:07.864670",
+  "expected_focus": [
+    "Conditional probability",
+    "Bayes theorem",
+    "Step-by-step reasoning",
+    "Numerical proof"
+  ],
+  "ai_evaluation": {
+    "correctness": "timeout",
+    "hallucination": false,
+    "security_aware": null,
+    "completeness": "timeout",
+    "idiomatic": null,
+    "notes": "Prompt 180 sn timeout'a uğradı."
+  }
+}

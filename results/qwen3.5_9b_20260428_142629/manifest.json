@@ -1,0 +1,12 @@
+{
+  "run_id": "1944f32e",
+  "model": "qwen3.5:9b",
+  "host": "http://192.168.240.30:11434",
+  "categories": [
+    "tools"
+  ],
+  "total_prompts": 6,
+  "start_time": "2026-04-28T14:26:29.070686",
+  "end_time": "2026-04-28T14:32:16.553367",
+  "duration_sec": 699.7
+}

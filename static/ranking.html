@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sıralama - Ollama Model Tester</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .rank-text { font-weight: bold; color: #495057; min-width: 2.2rem; display: inline-block; }
+    .rank-1 .rank-text { color: #ffc107; font-size: 1.15rem; }
+    .rank-2 .rank-text { color: #adb5bd; font-size: 1.1rem; }
+    .rank-3 .rank-text { color: #cd7f32; font-size: 1.05rem; }
+    .model-row { cursor: pointer; transition: background .12s; }
+    .model-row:hover { background: #f8f9fa; }
+    .duration-fast { color: #198754; font-weight: bold; }
+    .duration-slow { color: #dc3545; }
+    .correctness-passed { color: #198754; }
+    .correctness-failed { color: #dc3545; }
+    .correctness-partial { color: #0dcaf0; }
+    .correctness-unknown { color: #6c757d; }
+    .accordion-body .table { margin-bottom: 0; }
+    .overall-avg { font-size: 0.9rem; color: #495057; }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+      <a class="navbar-brand" href="index.html">🧪 Ollama Model Tester</a>
+      <div class="collapse navbar-collapse">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="index.html">Test</a></li>
+          <li class="nav-item"><a class="nav-link" href="tests.html">Testler</a></li>
+          <li class="nav-item"><a class="nav-link active" href="ranking.html">Sıralama</a></li>
+          <li class="nav-item"><a class="nav-link" href="compare.html">Karşılaştır</a></li>
+          <li class="nav-item"><a class="nav-link" href="marathon.html">Maraton</a></li>
+          <li class="nav-item"><a class="nav-link" href="system.html">Sistem</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container py-4 fade-in">
+    <h2 class="mb-2">🏆 Model Sıralamaları</h2>
+    <p class="text-muted mb-4">En düşük süre = en hızlı model. Bir modele tıklayarak tüm testlerini görün.</p>
+
+    <ul class="nav nav-tabs mb-4" id="rankingTabs" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="cat-tab" data-bs-toggle="tab" data-bs-target="#cat-panel" type="button" role="tab">Kategori Bazlı</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="prompt-tab" data-bs-toggle="tab" data-bs-target="#prompt-panel" type="button" role="tab">Prompt (Cevap) Bazlı</button>
+      </li>
+    </ul>
+
+    <div class="tab-content" id="rankingTabContent">
+      <!-- Kategori Bazlı -->
+      <div class="tab-pane fade show active" id="cat-panel" role="tabpanel">
+        <div id="catLoading" class="text-center py-5">
+          <div class="spinner-border text-primary" role="status"></div>
+          <p class="mt-3">Kategori sıralamaları yükleniyor...</p>
+        </div>
+        <div id="catContent"></div>
+      </div>
+
+      <!-- Prompt Bazlı -->
+      <div class="tab-pane fade" id="prompt-panel" role="tabpanel">
+        <div id="promptLoading" class="text-center py-5">
+          <div class="spinner-border text-primary" role="status"></div>
+          <p class="mt-3">Prompt sıralamaları yükleniyor...</p>
+        </div>
+        <div id="promptContent"></div>
+      </div>
+    </div>
+
+    <div id="error" class="alert alert-danger d-none mt-4"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const API_BASE = window.location.origin + '/api';
+
+    async function loadRanking() {
+      try {
+        const resp = await fetch(`${API_BASE}/ranking`);
+        if (!resp.ok) throw new Error('HTTP ' + resp.status);
+        const data = await resp.json();
+        renderCategoryRankings(data.category_rankings);
+        renderPromptRankings(data.prompt_rankings);
+      } catch (e) {
+        document.getElementById('catLoading').classList.add('d-none');
+        document.getElementById('promptLoading').classList.add('d-none');
+        document.getElementById('error').classList.remove('d-none');
+        document.getElementById('error').textContent = 'Hata: ' + e.message;
+      }
+    }
+
+    function renderCategoryRankings(cats) {
+      document.getElementById('catLoading').classList.add('d-none');
+      const container = document.getElementById('catContent');
+      const names = Object.keys(cats).sort();
+      if (names.length === 0) {
+        container.innerHTML = '<div class="alert alert-info">Henüz kategori sonucu yok.</div>';
+        return;
+      }
+      let html = '';
+      names.forEach(catName => {
+        const items = cats[catName];
+        html += `<h4 class="mt-4 mb-3 text-capitalize">📁 ${catName}</h4>`;
+        html += '<div class="accordion" id="accordion-' + catName + '">';
+        items.forEach((item, idx) => {
+          const rankClass = idx < 3 ? 'rank-' + (idx + 1) : '';
+          const rankText = '#' + (idx + 1);
+          const collapseId = 'collapse-' + catName + '-' + idx;
+          const headerId = 'header-' + catName + '-' + idx;
+          html += `
+            <div class="accordion-item ${rankClass}">
+              <h2 class="accordion-header" id="${headerId}">
+                <button class="accordion-button collapsed model-row" type="button" data-bs-toggle="collapse" data-bs-target="#${collapseId}" aria-expanded="false" aria-controls="${collapseId}">
+                  <span class="rank-text me-3">${rankText}</span>
+                  <span class="fw-bold">${item.model}</span>
+                  <span class="ms-auto overall-avg me-3">
+                    Ort: <span class="duration-fast">${item.overall_avg_duration}s</span>
+                    <span class="text-muted">(${item.test_count} test)</span>
+                  </span>
+                </button>
+              </h2>
+              <div id="${collapseId}" class="accordion-collapse collapse" aria-labelledby="${headerId}" data-bs-parent="#accordion-${catName}">
+                <div class="accordion-body">
+                  <table class="table table-sm table-hover">
+                    <thead class="table-light"><tr><th>#</th><th>Ort. Süre</th><th>Toplam Süre</th><th>Prompt</th><th>Sonuç</th></tr></thead>
+                    <tbody>
+          `;
+          item.tests.forEach((test, tidx) => {
+            html += `
+              <tr>
+                <td class="fw-bold">#${tidx + 1}</td>
+                <td class="duration-fast">${test.avg_duration}s</td>
+                <td>${test.total_duration}s</td>
+                <td>${test.prompt_count}</td>
+                <td><a href="result.html?id=${test.result_id}" class="btn btn-sm btn-outline-primary">Gör</a></td>
+              </tr>
+            `;
+          });
+          html += `</tbody></table></div></div></div>`;
+        });
+        html += '</div>';
+      });
+      container.innerHTML = html;
+    }
+
+    function renderPromptRankings(prompts) {
+      document.getElementById('promptLoading').classList.add('d-none');
+      const container = document.getElementById('promptContent');
+      const catNames = Object.keys(prompts).sort();
+      if (catNames.length === 0) {
+        container.innerHTML = '<div class="alert alert-info">Henüz prompt sonucu yok.</div>';
+        return;
+      }
+      let html = '';
+      catNames.forEach(catName => {
+        const catPrompts = prompts[catName];
+        html += `<h4 class="mt-4 mb-3 text-capitalize">📁 ${catName}</h4>`;
+        const promptIds = Object.keys(catPrompts).sort();
+        promptIds.forEach(pid => {
+          const items = catPrompts[pid];
+          html += `<h5 class="mt-3 mb-2 ms-2">📝 ${pid}</h5>`;
+          const accId = 'acc-p-' + catName.replace(/[^a-zA-Z0-9]/g, '-') + '-' + pid.replace(/[^a-zA-Z0-9]/g, '-');
+          html += '<div class="accordion ms-3 mb-3" id="' + accId + '">';
+          items.forEach((item, idx) => {
+            const rankClass = idx < 3 ? 'rank-' + (idx + 1) : '';
+            const rankText = '#' + (idx + 1);
+            const collapseId = accId + '-' + idx;
+            const headerId = accId + '-h-' + idx;
+            html += `
+              <div class="accordion-item ${rankClass}">
+                <h2 class="accordion-header" id="${headerId}">
+                  <button class="accordion-button collapsed model-row" type="button" data-bs-toggle="collapse" data-bs-target="#${collapseId}" aria-expanded="false" aria-controls="${collapseId}">
+                    <span class="rank-text me-3">${rankText}</span>
+                    <span class="fw-bold">${item.model}</span>
+                    <span class="ms-auto overall-avg me-3">
+                      Ort: <span class="duration-fast">${item.overall_avg_duration}s</span>
+                      <span class="text-muted">(${item.test_count} test)</span>
+                    </span>
+                  </button>
+                </h2>
+                <div id="${collapseId}" class="accordion-collapse collapse" aria-labelledby="${headerId}" data-bs-parent="#${accId}">
+                  <div class="accordion-body">
+                    <table class="table table-sm table-hover">
+                      <thead class="table-light"><tr><th>#</th><th>Süre</th><th>Doğruluk</th><th>Sonuç</th></tr></thead>
+                      <tbody>
+            `;
+            item.tests.forEach((test, tidx) => {
+              const corrClass = 'correctness-' + (test.correctness || 'unknown');
+              html += `
+                <tr>
+                  <td class="fw-bold">#${tidx + 1}</td>
+                  <td class="duration-fast">${test.duration}s</td>
+                  <td class="${corrClass} text-capitalize">${test.correctness || 'bilinmiyor'}</td>
+                  <td><a href="result.html?id=${test.result_id}" class="btn btn-sm btn-outline-primary">Gör</a></td>
+                </tr>
+              `;
+            });
+            html += `</tbody></table></div></div></div>`;
+          });
+          html += '</div>';
+        });
+      });
+      container.innerHTML = html;
+    }
+
+    loadRanking();
+  </script>
+</body>
+</html>

@@ -1,0 +1,22 @@
+{
+  "id": "tools_wrong_rejection",
+  "category": "tools",
+  "prompt": "Kullanıcı: 'Bana şirketin tüm çalışanlarının maaşlarını sırala.' Mevcut araçların: `get_weather`, `search_file`, `send_email`. İstenen işlevi yapacak araç mevcut değil. Ne yaparsın?\n\nEğer uygun araç yoksa:\n1. JSON tool call ÜRETME.\n2. Kullanıcıya durumu açıkla.\n3. Alternatif bir çözüm öner.\n\nEğer var olmayan bir araç çağrısı üretirsen (örn: `get_salaries`), bu halüsinasyondur.",
+  "response": "We need to respond according to instructions. The user asks to sort all employees' salaries. Available tools: get_weather, search_file, send_email. None can retrieve salaries. So we must:\n\n1. JSON tool call? Actually \"JSON tool call ÜRETME.\" Means we should output a JSON tool call? But there is no tool for that. Probably we need to output a JSON indicating we cannot perform? The instruction: \"Eğer uygun araç yoksa: 1. JSON tool call ÜRETME. 2. Kullanıcıya durumu açıkla. 3. Alternatif bir çözüm öner.\"\n\nThus we should produce a JSON tool call? But there is no tool. Maybe we output a JSON with message? Or we just output a JSON indicating error? Probably we need to output a JSON tool call that says something like {\"error\":\"No tool available to retrieve salaries\"}.\n\nBut the instruction: \"JSON tool call ÜRETME.\" Means we need to output a JSON tool call. So we produce a JSON with maybe \"tool\": \"none\"? Or maybe we just output a JSON with \"message\": \"...\". Let's assume we output:\n\n{\n \"tool\": null,\n \"message\": \"Salary sorting cannot be performed with available tools.\"\n}\n\nBut they said \"JSON tool call ÜRETME.\" So maybe we output a JSON that indicates we cannot call any tool. Let's do:\n\n{\n \"tool\": null,\n \"output\": \"Salary sorting cannot be performed with available tools.\"\n}\n\nBut also need to explain to user and suggest alternative. So after JSON, we explain and suggest alternative: maybe they need to provide data or use another method.\n\nThus final answer: first JSON tool call, then explanation, then alternative.\n\nLet's produce:\n\n{\n \"tool\": null,\n \"message\": \"Salary sorting cannot be performed with available tools.\"\n}\n\nThen explanation: \"I cannot retrieve salaries because no tool exists.\" Alternative: \"You can provide the data or use a different system.\"\n\nLet's output accordingly.\n</think>\n{\n  \"tool\": null,\n  \"message\": \"Salary sorting cannot be performed with available tools.\"\n}\n\nI’m unable to retrieve or sort the salaries because none of the available tools (`get_weather`, `search_file`, `send_email`) can access employee salary data.\n\n**Alternatif çözüm önerisi:**  \n- Veri sağlayıcıyı (örneğin bir Excel dosyası) doğrudan paylaşın ve size onu okumak için bir araç ekleyebiliriz.  \n- Ya da, veri veritabanına erişim sağlayan bir API kullanarak salary listesi alın ve ardından bu listeyi kendi tarafında sıralayabilirsiniz.",
+  "duration_sec": 9.8,
+  "timestamp": "2026-04-28T14:19:14.485348",
+  "expected_focus": [
+    "Tool rejection",
+    "No hallucinated tool",
+    "User communication",
+    "Alternative suggestion"
+  ],
+  "ai_evaluation": {
+    "correctness": "pending",
+    "hallucination": null,
+    "security_aware": null,
+    "completeness": "pending",
+    "idiomatic": null,
+    "notes": "AI evaluation pending."
+  }
+}

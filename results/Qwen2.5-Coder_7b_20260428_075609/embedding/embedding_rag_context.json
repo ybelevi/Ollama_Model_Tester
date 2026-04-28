@@ -1,0 +1,21 @@
+{
+  "id": "embedding_rag_context",
+  "category": "embedding",
+  "prompt": "Bir RAG (Retrieval-Augmented Generation) sisteminde, kullanıcı sorusuna cevap verecek optimum context chunk'larını seç.\n\nSoru: 'Python'da async/await ne zaman kullanılır?'\n\nMevcut chunk'lar:\n1. 'Python 3.5 ile birlikte async ve await keyword'leri dil eklendi...'\n2. 'REST API tasarlarken endpoint'lerinizi modular tutun...'\n3. 'asyncio kütüphanesi event loop tabanlı concurrency sağlar...'\n4. 'Docker container'ları birbirinden izole ortamlardır...'\n5. 'Veritabanı sorgularınızı async driver ile yapabilirsiniz...'\n\nHangi chunk'lar context olarak seçilmeli? Neden? Seçilmeyeceklerin nedenini de belirt.",
+  "response": "Bu sorunun doğru cevabı için en uygun olan chunk'lar şunlardır:\n\n1. 'Python 3.5 ile birlikte async ve await keyword'leri dil eklendi...'\n3. 'asyncio kütüphanesi event loop tabanlı concurrency sağlar...'\n\nNedenler:\n- Bu iki chunk, sorunun temel konusunu (async/await ne zaman kullanılır) kapsar. İlk chunk, async/await'in Python'da nasıl eklendiğini ve hangi durumlarda kullanılacağını anlatmaktadır. İkinci chunk ise asyncio kütüphanesinin nasıl çalıştığını ve event loop tabanlı nasıl concurrency sağladığını açıklamaktadır.\n- Bu iki bilgi, sorunun cevabı için temel bir fikir vermektedir.\n\nSeçilmeyeceklerin nedeni:\n2. 'REST API tasarlarken endpoint'lerinizi modular tutun...' - Bu chunk, REST API tasarımıyla ilgili bilgi içeriyor ve sorunun konusu olan async/await ile ilgisi yoktur.\n4. 'Docker container'ları birbirinden izole ortamlardır...' - Bu chunk, Docker teknolojisiyle ilgili bilgi içeriyor ve sorunun konusu olan async/await ile ilgisi yoktur.\n5. 'Veritabanı sorgularınızı async driver ile yapabilirsiniz...' - Bu chunk, veritabanı işlemlerinde async kullanma hakkında bilgi içeriyor ancak sorunun temel konusu olan async/await ne zaman kullanılacağını açıklamıyor.\n\nBu nedenlerle, sorunun cevabı için en uygun olan context chunkları 1 ve 3'tür.",
+  "duration_sec": 9.8,
+  "timestamp": "2026-04-28T07:57:04.183367",
+  "expected_focus": [
+    "Relevance filtering",
+    "RAG chunk selection",
+    "Question-context alignment"
+  ],
+  "ai_evaluation": {
+    "correctness": "pending",
+    "hallucination": null,
+    "security_aware": null,
+    "completeness": "pending",
+    "idiomatic": null,
+    "notes": "AI evaluation pending."
+  }
+}

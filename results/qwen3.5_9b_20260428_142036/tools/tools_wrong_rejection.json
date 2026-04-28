@@ -1,0 +1,22 @@
+{
+  "id": "tools_wrong_rejection",
+  "category": "tools",
+  "prompt": "Kullanıcı: 'Bana şirketin tüm çalışanlarının maaşlarını sırala.' Mevcut araçların: `get_weather`, `search_file`, `send_email`. İstenen işlevi yapacak araç mevcut değil. Ne yaparsın?\n\nEğer uygun araç yoksa:\n1. JSON tool call ÜRETME.\n2. Kullanıcıya durumu açıkla.\n3. Alternatif bir çözüm öner.\n\nEğer var olmayan bir araç çağrısı üretirsen (örn: `get_salaries`), bu halüsinasyondur.",
+  "response": "Şu anda şirket çalışanlarının maaşlarını sıralama isteğini yerine getiremem. Mevcut araçlarım (`get_weather`, `search_file`, `send_email`) arasında bu işlemi gerçekleştirecek bir fonksiyon bulunmamaktadır.\n\nMaaş bilgileri gibi hassas kişisel verilerin erişimi genellikle özel yetkiler gerektirir ve mevcut sistemim bu tür verileri çekmek için tasarlanmamıştır.\n\nAlternatif olarak, bu bilgiyi İnsan Kaynakları (İK) departmanından veya yetkili yöneticilerden talep edebilirsiniz. Eğer şirket içi bir portal veya dosya sistemi varsa, oradan ilgili raporları bulabilirsiniz, ancak ben doğrudan bu veriyi çekemem.",
+  "duration_sec": 49.1,
+  "timestamp": "2026-04-28T14:25:51.216945",
+  "expected_focus": [
+    "Tool rejection",
+    "No hallucinated tool",
+    "User communication",
+    "Alternative suggestion"
+  ],
+  "ai_evaluation": {
+    "correctness": "pending",
+    "hallucination": null,
+    "security_aware": null,
+    "completeness": "pending",
+    "idiomatic": null,
+    "notes": "AI evaluation pending."
+  }
+}

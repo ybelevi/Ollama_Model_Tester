@@ -1,0 +1,30 @@
+[
+  {
+    "id": "embedding_semantic_search",
+    "category": "embedding",
+    "prompt": "Aşağıdaki dokümanlar ve kullanıcı sorusu verilmiş. Semantic similarity mantığıyla (kelime eşleşmesi değil, anlam eşleşmesi) en uygun 3 dokümanı sırala:\n\nDokümanlar:\n1. 'Faturalarınızı kredi kartı, havale veya otomatik ödeme ile ödeyebilirsiniz.'\n2. 'Yıllık abonelikte %20 indirim fırsatını kaçırmayın.'\n3. 'Şifrenizi unuttuysanız e-posta adresinize reset linki gönderiyoruz.'\n4. 'Teknik destek ekibimize hafta içi 09:00-18:00 arası ulaşabilirsiniz.'\n5. 'Aylık kullanım limitinizi kontrol panelinden takip edebilirsiniz.'\n\nSoru: 'Fatura ödeme seçenekleri neler?'\n\nCevabın SADECE doküman numaralarını ve nedenini içersin. '1 numaralı doküman çünkü...' şeklinde.",
+    "depends_on": null,
+    "expected_focus": ["Semantic matching", "Not keyword matching", "Ranking justification"]
+  },
+  {
+    "id": "embedding_similarity_ranking",
+    "category": "embedding",
+    "prompt": "Aşağıdaki 5 cümleyi, 'Araba bakımı yapmak istiyorum' referans cümlesine olan anlamsal benzerliğe göre sırala (1=en benzer, 5=en uzak). Sadece kelime eşleşmesine bakma, anlama bak.\n\nCümleler:\nA. 'Araç servis randevusu almak için bayiliğimizi arayın.'\nB. 'Yeni bir otomobil almayı düşünüyorum.'\nC. 'Motor yağı değişimi her 10.000 km'de bir yapılmalıdır.'\nD. 'Lastik basıncını düzenli olarak kontrol edin.'\nE. 'Araba kiralama hizmetlerimizden yararlanabilirsiniz.'\n\nSıralamanı ve her biri için kısa gerekçe yaz.",
+    "depends_on": null,
+    "expected_focus": ["Semantic proximity", "Context understanding", "Not lexical overlap"]
+  },
+  {
+    "id": "embedding_rag_context",
+    "category": "embedding",
+    "prompt": "Bir RAG (Retrieval-Augmented Generation) sisteminde, kullanıcı sorusuna cevap verecek optimum context chunk'larını seç.\n\nSoru: 'Python'da async/await ne zaman kullanılır?'\n\nMevcut chunk'lar:\n1. 'Python 3.5 ile birlikte async ve await keyword'leri dil eklendi...'\n2. 'REST API tasarlarken endpoint'lerinizi modular tutun...'\n3. 'asyncio kütüphanesi event loop tabanlı concurrency sağlar...'\n4. 'Docker container'ları birbirinden izole ortamlardır...'\n5. 'Veritabanı sorgularınızı async driver ile yapabilirsiniz...'\n\nHangi chunk'lar context olarak seçilmeli? Neden? Seçilmeyeceklerin nedenini de belirt.",
+    "depends_on": null,
+    "expected_focus": ["Relevance filtering", "RAG chunk selection", "Question-context alignment"]
+  },
+  {
+    "id": "embedding_multilingual",
+    "category": "embedding",
+    "prompt": "Cross-lingual anlam eşleştirme: Aşağıdaki İngilizce cümlelerle Türkçe cümlelerin anlamsal eşleşmelerini yap.\n\nİngilizce:\n1. 'The database connection failed due to timeout.'\n2. 'Please review the payment invoice before proceeding.'\n3. 'User authentication requires a valid JWT token.'\n\nTürkçe:\nA. 'Veritabanı bağlantısı zaman aşımından dolayı başarısız oldu.'\nB. 'Kullanıcı doğrulaması için geçerli bir JWT tokeni gereklidir.'\nC. 'Devam etmeden önce ödeme faturasını gözden geçirin.'\nD. 'Sistem bakımı planlanan zamanda başlayacaktır.'\n\nDoğru eşleşmeleri (1-A, 2-B vb.) yap ve nedenini açıkla. Anlam eşleşmesi önemli, kelime-for-kelime çeviri değil.",
+    "depends_on": null,
+    "expected_focus": ["Cross-lingual semantic match", "Meaning over translation", "Technical term alignment"]
+  }
+]

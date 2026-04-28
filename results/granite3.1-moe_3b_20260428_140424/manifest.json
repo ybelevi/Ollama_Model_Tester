@@ -1,0 +1,13 @@
+{
+  "run_id": "64a0313c",
+  "model": "granite3.1-moe:3b",
+  "host": "http://192.168.240.30:11434",
+  "categories": [
+    "tools"
+  ],
+  "total_prompts": 6,
+  "start_time": "2026-04-28T14:04:24.711405",
+  "end_time": "2026-04-28T14:04:52.281231",
+  "duration_sec": 27.9,
+  "timeouts": 0
+}

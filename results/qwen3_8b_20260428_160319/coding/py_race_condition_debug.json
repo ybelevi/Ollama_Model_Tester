@@ -1,0 +1,20 @@
+{
+  "id": "py_race_condition_debug",
+  "category": "coding",
+  "prompt": "Aşağıdaki kodda race condition var. Hatayı açıkla ve düzeltilmiş halini yaz. Sadece kod ve kısa açıklama:\n\n```python\nimport threading\n\nbalance = 0\n\ndef deposit(amount):\n    global balance\n    for _ in range(100000):\n        balance += amount\n\nt1 = threading.Thread(target=deposit, args=(1,))\nt2 = threading.Thread(target=deposit, args=(1,))\nt1.start(); t2.start()\nt1.join(); t2.join()\nprint(balance)\n```",
+  "response": "**Hata Açıklaması:**  \n`balance += amount` işlemi atomik değildir. İki thread aynı anda `balance` değişkenini okuyabilir, değerleri ekleyebilir ve aynı sonucu yazabilir. Bu, beklenmeyen değerlerin oluşmasına (örneğin 1 yerine 2 yerine 1 sonucu) neden olur.\n\n**Düzeltilmiş Kod:**  \n```python\nimport threading\n\nbalance = 0\nlock = threading.Lock()\n\ndef deposit(amount):\n    global balance\n    for _ in range(100000):\n        with lock:\n            balance += amount\n\nt1 = threading.Thread(target=deposit, args=(1,))\nt2 = threading.Thread(target=deposit, args=(1,))\nt1.start(); t2.start()\nt1.join(); t2.join()\nprint(balance)\n```\n\n**Açıklama:**  \n`with lock:` bloğu, `balance += amount` işlemini sadece bir threadin aynı anda yapmasına izin verir. Bu, `balance` değişkenine erişimi senkronize eder ve race condition'u ortadan kaldırır. Sonuç olarak, `balance` 200000 olur.",
+  "duration_sec": 28.2,
+  "timestamp": "2026-04-28T16:05:09.858666",
+  "expected_focus": [
+    "Lock/RLock",
+    "global state explanation"
+  ],
+  "ai_evaluation": {
+    "correctness": "pending",
+    "hallucination": null,
+    "security_aware": null,
+    "completeness": "pending",
+    "idiomatic": null,
+    "notes": "AI evaluation pending."
+  }
+}

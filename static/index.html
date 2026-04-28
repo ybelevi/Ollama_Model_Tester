@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ollama Model Tester</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+      <a class="navbar-brand" href="index.html">🧪 Ollama Model Tester</a>
+      <div class="collapse navbar-collapse">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link active" href="index.html">Test</a></li>
+          <li class="nav-item"><a class="nav-link" href="tests.html">Testler</a></li>
+          <li class="nav-item"><a class="nav-link" href="ranking.html">Sıralama</a></li>
+          <li class="nav-item"><a class="nav-link" href="compare.html">Karşılaştır</a></li>
+          <li class="nav-item"><a class="nav-link" href="marathon.html">Maraton</a></li>
+          <li class="nav-item"><a class="nav-link" href="system.html">Sistem</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container py-5 fade-in">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <div class="card mb-4">
+          <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">1. Ollama Bağlantısı</h4>
+          </div>
+          <div class="card-body">
+            <div class="mb-3">
+              <label class="form-label">Ollama Host</label>
+              <div class="input-group">
+                <input type="text" class="form-control" id="ollamaHost" value="http://192.168.240.30:11434">
+                <button class="btn btn-outline-secondary" type="button" id="btnConnect">Bağlan</button>
+              </div>
+              <div class="form-text">Varsayılan: 192.168.240.30:11434. Kendi Ollama sunucunuzu da girebilirsiniz.</div>
+            </div>
+            <div id="connectionStatus" class="alert d-none"></div>
+          </div>
+        </div>
+
+        <div class="card mb-4">
+          <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">2. Model Seçimi</h4>
+          </div>
+          <div class="card-body">
+            <div class="mb-3">
+              <label class="form-label">Model Adı</label>
+              <div class="input-group">
+                <input type="text" class="form-control" id="modelName" placeholder="örn: qwen3.5:9b">
+                <button class="btn btn-outline-primary" type="button" id="btnFetchModels">
+                  <span class="spinner-border spinner-border-sm d-none" id="modelSpinner"></span>
+                  Listeyi Çek
+                </button>
+              </div>
+            </div>
+            <div id="modelList" class="list-group d-none"></div>
+          </div>
+        </div>
+
+        <div class="card mb-4">
+          <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h4 class="mb-0">3. Kategori Seçimi</h4>
+            <span class="badge bg-light text-dark" id="selectedCount">0 seçili</span>
+          </div>
+          <div class="card-body">
+            <div class="row g-3" id="categoryContainer">
+              <!-- Categories injected by JS -->
+            </div>
+          </div>
+        </div>
+
+        <div class="d-grid">
+          <button class="btn btn-success btn-lg" id="btnStart" disabled>
+            🚀 Testi Başlat
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script type="module">
+    const API_BASE = window.location.origin + '/api';
+    const categories = [
+      { id: 'coding', name: 'Coding', icon: '🔧', desc: 'Kod üretimi, debug, güvenlik, mimari, algoritma. 46 test.', color: '#0d6efd' },
+      { id: 'vision', name: 'Vision', icon: '👁️', desc: 'Görüntü analizi, UI element tanıma, diagram okuma, OCR. 8 test.', color: '#6610f2' },
+      { id: 'tools', name: 'Tools', icon: '🛠️', desc: 'Fonksiyon çağrısı, tool selection, multi-step chaining. 6 test.', color: '#198754' },
+      { id: 'thinking', name: 'Thinking', icon: '🧠', desc: 'Çok adımlı muhakeme, mantık, olasılık, threat model. 6 test.', color: '#fd7e14' },
+      { id: 'embedding', name: 'Embedding', icon: '📊', desc: 'Semantic search, similarity, RAG context, cross-lingual. 4 test.', color: '#dc3545' }
+    ];
+
+    let selectedCategories = new Set();
+    let currentHost = '';
+    let currentModel = '';
+
+    function saveFormState() {
+      localStorage.setItem('omt_host', document.getElementById('ollamaHost').value.trim());
+      localStorage.setItem('omt_model', currentModel);
+      localStorage.setItem('omt_categories', JSON.stringify(Array.from(selectedCategories)));
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function loadFormState() {
+      const host = localStorage.getItem('omt_host');
+      const model = localStorage.getItem('omt_model');
+      const cats = localStorage.getItem('omt_categories');
+      if (host) document.getElementById('ollamaHost').value = host;
+      if (model) {
+        currentModel = model;
+        document.getElementById('modelName').value = model;
+      }
+      if (cats) {
+        try {
+          const arr = JSON.parse(cats);
+          arr.forEach(id => selectedCategories.add(id));
+        } catch (e) {
+          console.warn('Failed to parse saved categories:', e);
+        }
+      }
+    }
+
+    function initCategories() {
+      const container = document.getElementById('categoryContainer');
+      categories.forEach(cat => {
+        const col = document.createElement('div');
+        col.className = 'col-md-4';
+        const safeId = escapeHtml(cat.id);
+        const safeName = escapeHtml(cat.name);
+        const safeIcon = escapeHtml(cat.icon);
+        const safeDesc = escapeHtml(cat.desc);
+        col.innerHTML = `
+          <div class="card category-card h-100 ${selectedCategories.has(cat.id) ? 'selected' : ''}" data-id="${safeId}">
+            <div class="card-body text-center">
+              <div class="category-icon">${safeIcon}</div>
+              <h5 class="card-title">${safeName}</h5>
+              <p class="card-text text-muted small">${safeDesc}</p>
+            </div>
+          </div>
+        `;
+        col.querySelector('.category-card').addEventListener('click', () => toggleCategory(cat.id));
+        container.appendChild(col);
+      });
+      document.getElementById('selectedCount').textContent = `${selectedCategories.size} seçili`;
+    }
+
+    function toggleCategory(id) {
+      const card = document.querySelector(`.category-card[data-id="${id}"]`);
+
+      // Block unsupported categories completely
+      if (!selectedCategories.has(id)) {
+        const modelData = window.lastFetchedModels?.find(m => m.name === currentModel);
+        const capToCat = { vision: 'vision', tools: 'tools', thinking: 'thinking' };
+        const requiredCap = Object.keys(capToCat).find(k => capToCat[k] === id);
+        if (requiredCap && modelData && modelData.capabilities && !modelData.capabilities.includes(requiredCap)) {
+          alert(`⛔ ENGELLENDİ: Seçtiğiniz model '${currentModel}' ${id.toUpperCase()} yeteneğini desteklemiyor (Ollama sitesinde ${requiredCap} olarak belirtilmemiş).\n\nBu kategori bu modelle test edilemez. Lütfen başka bir model seçin veya bu kategoriyi atlayın.`);
+          return;
+        }
+      }
+
+      if (selectedCategories.has(id)) {
+        selectedCategories.delete(id);
+        card.classList.remove('selected');
+      } else {
+        selectedCategories.add(id);
+        card.classList.add('selected');
+      }
+      document.getElementById('selectedCount').textContent = `${selectedCategories.size} seçili`;
+      saveFormState();
+      updateStartButton();
+    }
+
+    function updateStartButton() {
+      const btn = document.getElementById('btnStart');
+      btn.disabled = !(currentModel && selectedCategories.size > 0);
+    }
+
+    async function checkConnection() {
+      const host = document.getElementById('ollamaHost').value.trim();
+      const statusDiv = document.getElementById('connectionStatus');
+      statusDiv.classList.remove('d-none', 'alert-success', 'alert-danger');
+      statusDiv.textContent = 'Bağlantı kontrol ediliyor...';
+      statusDiv.classList.add('alert-info');
+
+      try {
+        const resp = await fetch(`${API_BASE}/models?host=${encodeURIComponent(host)}`);
+        if (!resp.ok) throw new Error('HTTP ' + resp.status);
+        const data = await resp.json();
+        currentHost = host;
+        statusDiv.classList.remove('alert-info', 'alert-danger');
+        statusDiv.classList.add('alert-success');
+        statusDiv.textContent = `✅ Bağlantı başarılı! ${data.models.length} model bulundu.`;
+      } catch (e) {
+        statusDiv.classList.remove('alert-info', 'alert-success');
+        statusDiv.classList.add('alert-danger');
+        statusDiv.textContent = `❌ Bağlantı hatası: ${e.message}`;
+      }
+    }
+
+    async function fetchModels() {
+      const host = document.getElementById('ollamaHost').value.trim();
+      const spinner = document.getElementById('modelSpinner');
+      const listDiv = document.getElementById('modelList');
+      spinner.classList.remove('d-none');
+      listDiv.classList.add('d-none');
+
+      try {
+        const resp = await fetch(`${API_BASE}/models?host=${encodeURIComponent(host)}`);
+        if (!resp.ok) throw new Error('HTTP ' + resp.status);
+        const data = await resp.json();
+        console.log('[FETCH] API response:', data);
+        currentHost = host;
+        window.lastFetchedModels = data.models; // Store for later use
+
+        listDiv.innerHTML = '';
+        data.models.forEach(m => {
+          const sizeGB = (m.size / 1e9).toFixed(1);
+          const safeModelName = escapeHtml(m.name);
+
+          // Build capability badges
+          let capBadges = '';
+          if (m.capabilities && m.capabilities.length > 0) {
+            const capColors = {
+              vision: 'bg-info',
+              tools: 'bg-success',
+              thinking: 'bg-warning text-dark'
+            };
+            capBadges = m.capabilities.map(cap =>
+              `<span class="badge ${capColors[cap] || 'bg-secondary'} me-1">${cap}</span>`
+            ).join('');
+          }
+
+          const item = document.createElement('button');
+          item.className = 'list-group-item list-group-item-action';
+          item.innerHTML = `
+            <div class="d-flex justify-content-between align-items-center">
+              <span>${safeModelName}</span>
+              <span class="badge bg-secondary">${sizeGB} GB</span>
+            </div>
+            ${capBadges ? `<div class="mt-1">${capBadges}</div>` : '<div class="mt-1"><span class="badge bg-light text-muted">no special capabilities</span></div>'}
+          `;
+          item.addEventListener('click', () => selectModel(m.name));
+          listDiv.appendChild(item);
+        });
+        listDiv.classList.remove('d-none');
+      } catch (e) {
+        alert('Model listesi alınamadı: ' + e.message);
+      } finally {
+        spinner.classList.add('d-none');
+      }
+    }
+
+    function selectModel(name) {
+      currentModel = name;
+      document.getElementById('modelName').value = name;
+      document.getElementById('modelList').classList.add('d-none');
+      saveFormState();
+      updateStartButton();
+
+      // Find model capabilities and update category cards
+      const modelData = window.lastFetchedModels?.find(m => m.name === name);
+      if (modelData && modelData.capabilities) {
+        updateCategoryHighlights(modelData.capabilities);
+      }
+    }
+
+    function updateCategoryHighlights(capabilities) {
+      const capToCat = { vision: 'vision', tools: 'tools', thinking: 'thinking' };
+      document.querySelectorAll('.category-card').forEach(card => {
+        const catId = card.dataset.id;
+        const hasCap = capabilities.some(cap => capToCat[cap] === catId);
+        card.classList.remove('border-success', 'border-warning', 'opacity-50');
+        card.style.borderWidth = '';
+        if (hasCap) {
+          card.classList.add('border-success');
+          card.style.borderWidth = '3px';
+        } else if (['vision', 'tools', 'thinking'].includes(catId)) {
+          card.classList.add('opacity-50');
+        }
+      });
+    }
+
+    async function startTest() {
+      const btn = document.getElementById('btnStart');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Başlatılıyor...';
+
+      const host = currentHost || document.getElementById('ollamaHost').value.trim();
+      const model = currentModel;
+      const categories = Array.from(selectedCategories);
+
+      try {
+        const resp = await fetch(`${API_BASE}/test/start`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ host, model, categories, force: false })
+        });
+        if (!resp.ok) throw new Error('HTTP ' + resp.status);
+        const data = await resp.json();
+
+        // Check warnings
+        if (data.warning) {
+          const ok = confirm(data.message + "\n\nDevam etmek istiyor musunuz?");
+          if (!ok) {
+            btn.disabled = false;
+            btn.innerHTML = '🚀 Testi Başlat';
+            return;
+          }
+          // Retry with force=true
+          const resp2 = await fetch(`${API_BASE}/test/start`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ host, model, categories, force: true })
+          });
+          const data2 = await resp2.json();
+          if (data2.run_id) {
+            localStorage.setItem('omt_active_run_id', data2.run_id);
+            window.open(`test.html?run_id=${data2.run_id}`, '_blank');
+          }
+        } else if (data.run_id) {
+          localStorage.setItem('omt_active_run_id', data.run_id);
+          window.open(`test.html?run_id=${data.run_id}`, '_blank');
+        }
+
+        // Model mismatch warning
+        // Show restart info if Ollama was restarted
+        if (data.restart_info) {
+          setTimeout(() => {
+            alert(data.restart_info);
+          }, 500);
+        } else if (data.loaded_model && data.loaded_model !== model) {
+          setTimeout(() => {
+            alert(`⚠️ UYARI: Ollama'da şu anda '${data.loaded_model}' yüklü, ama siz '${model}' test ediyorsunuz.\n\nEğer ilk prompt çok uzun sürerse (5+ dk), bu model değişikliğinden kaynaklanıyor olabilir. Sunucuda modeli değiştirmek için:\n\nsudo systemctl daemon-reload\nsudo systemctl restart ollama`);
+          }, 500);
+        }
+
+        btn.innerHTML = '✅ Test arka planda başladı!';
+        btn.classList.remove('btn-success');
+        btn.classList.add('btn-outline-success');
+        if (data.run_id) showActiveTestBanner(data.run_id);
+      } catch (e) {
+        alert('Test başlatılamadı: ' + e.message);
+        btn.disabled = false;
+        btn.innerHTML = '🚀 Testi Başlat';
+        btn.classList.remove('btn-outline-success');
+        btn.classList.add('btn-success');
+      }
+    }
+
+    function showActiveTestBanner(runId) {
+      const existing = document.getElementById('activeTestBanner');
+      if (existing) existing.remove();
+      const banner = document.createElement('div');
+      banner.id = 'activeTestBanner';
+      banner.className = 'alert alert-info mt-3';
+      const safeRunId = escapeHtml(runId);
+      banner.innerHTML = `
+        <div class="d-flex justify-content-between align-items-center">
+          <span>⏳ Test arka planda çalışıyor: <code>${safeRunId}</code></span>
+          <a href="test.html?run_id=${safeRunId}" target="_blank" class="btn btn-sm btn-primary">Test Ekranına Git</a>
+        </div>
+      `;
+      const mainContainer = document.querySelector('.container.py-5');
+      if (mainContainer) {
+        mainContainer.insertBefore(banner, mainContainer.firstChild);
+      }
+    }
+
+    async function checkActiveTest() {
+      const runId = localStorage.getItem('omt_active_run_id');
+      if (!runId) return;
+
+      try {
+        const resp = await fetch(`${API_BASE}/test/status/${runId}`);
+        if (!resp.ok) {
+          // Test bulunamadı (404) veya sunucu hatası — temizle
+          localStorage.removeItem('omt_active_run_id');
+          return;
+        }
+        const data = await resp.json();
+        const terminalStatuses = ['completed', 'error', 'cancelled'];
+        if (terminalStatuses.includes(data.status)) {
+          // Test bitmiş — temizle
+          localStorage.removeItem('omt_active_run_id');
+          return;
+        }
+        // Gerçekten aktif — banner göster
+        showActiveTestBanner(runId);
+      } catch (e) {
+        // Offline veya bağlantı yok — banner gösterme ama silme
+        // Kullanıcı offline modda olabilir
+      }
+    }
+
+    document.getElementById('btnConnect').addEventListener('click', checkConnection);
+    document.getElementById('btnFetchModels').addEventListener('click', fetchModels);
+    document.getElementById('btnStart').addEventListener('click', startTest);
+    document.getElementById('modelName').addEventListener('input', (e) => {
+      currentModel = e.target.value.trim();
+      saveFormState();
+      updateStartButton();
+    });
+    document.getElementById('ollamaHost').addEventListener('input', saveFormState);
+
+    loadFormState();
+    initCategories();
+    updateStartButton();
+    await checkActiveTest();
+  </script>
+</body>
+</html>

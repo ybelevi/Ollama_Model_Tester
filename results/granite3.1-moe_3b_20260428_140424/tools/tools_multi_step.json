@@ -1,0 +1,22 @@
+{
+  "id": "tools_multi_step",
+  "category": "tools",
+  "prompt": "Kullanıcı: 'Son 3 günün satış raporunu çek ve toplamı email olarak gönder.' Mevcut araçların:\n1. `get_sales(start_date: string, end_date: string) -> list[dict]`\n2. `calculate_sum(items: list[float]) -> float`\n3. `send_email(to: string, subject: string, body: string) -> bool`\n\nBu işlemi tamamlamak için gereken TÜM tool call'ları sırayla üret. Her adımda bir önceki adımın çıktısını nasıl kullanacağını belirt.\n\nFormat (array):\n```json\n[\n  {\"tool\": \"...\", \"parameters\": {...}, \"reason\": \"...\"},\n  ...\n]\n```",
+  "response": "Here are the tool calls based on your requirements:\n\n1. Fetching sales data for the last 3 days and calculating their sum:\n\n```json\n[\n  {\n    \"tool\": \"get_sales\",\n    \"parameters\": {\n      \"start_date\": \"3 days ago\",\n      \"end_date\": \"today\"\n    },\n    \"reason\": \"To obtain the sales data for the last 3 days and calculate their sum.\"\n  }\n]\n```\n\n2. Calculating the total sum of items:\n\n```json\n[\n  {\n    \"tool\": \"calculate_sum\",\n    \"parameters\": [1.5, 2.75, 3.0, 4.25], // Example list of item prices\n    \"reason\": \"To calculate the total sum of given items.\"\n  }\n]\n```\n\n3. Sending an email with the sales data and sum:\n\n```json\n[\n  {\n    \"tool\": \"send_email\",\n    \"parameters\": {\n      \"to\": \"recipient@example.com\",\n      \"subject\": \"Sales Report for Last 3 Days\",\n      \"body\": JSON.stringify({\n        \"salesData\": [\"10 units sold\", \"50 units sold\", \"20 units sold\"], // Example sales data\n        \"totalSum\": 87.5 // Example total sum\n      })\n    },\n    \"reason\": \"To send an email containing the sales report and total sum to the specified recipient.\"\n  }\n]\n```",
+  "duration_sec": 2.4,
+  "timestamp": "2026-04-28T14:04:45.219127",
+  "expected_focus": [
+    "Multi-step chaining",
+    "Output dependency",
+    "Reasoning",
+    "JSON array schema"
+  ],
+  "ai_evaluation": {
+    "correctness": "pending",
+    "hallucination": null,
+    "security_aware": null,
+    "completeness": "pending",
+    "idiomatic": null,
+    "notes": "AI evaluation pending."
+  }
+}

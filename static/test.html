@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test Çalışıyor - Ollama Model Tester</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+      <a class="navbar-brand" href="index.html">🧪 Ollama Model Tester</a>
+      <div class="collapse navbar-collapse">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="index.html">Test</a></li>
+          <li class="nav-item"><a class="nav-link" href="tests.html">Testler</a></li>
+          <li class="nav-item"><a class="nav-link" href="ranking.html">Sıralama</a></li>
+          <li class="nav-item"><a class="nav-link" href="compare.html">Karşılaştır</a></li>
+          <li class="nav-item"><a class="nav-link" href="marathon.html">Maraton</a></li>
+          <li class="nav-item"><a class="nav-link" href="system.html">Sistem</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container py-4 fade-in">
+    <div class="row justify-content-center">
+      <div class="col-lg-10">
+        <div class="card mb-4">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <div>
+              <span class="status-indicator status-running" id="statusIndicator"></span>
+              <span id="statusText">Test çalışıyor...</span>
+            </div>
+            <span class="badge bg-dark" id="modelBadge">Model: -</span>
+          </div>
+          <div class="card-body">
+            <div class="mb-3">
+              <div class="d-flex justify-content-between mb-1">
+                <span id="progressLabel">0 / 0 tamamlandı</span>
+                <span id="progressPercent">0%</span>
+              </div>
+              <div class="progress">
+                <div class="progress-bar progress-bar-striped progress-bar-animated" id="progressBar" style="width: 0%">0%</div>
+              </div>
+            </div>
+            <div class="row text-center mb-3">
+              <div class="col-4">
+                <div class="text-muted small">Geçen Süre</div>
+                <div class="fw-bold" id="elapsedTime">0:00</div>
+              </div>
+              <div class="col-4">
+                <div class="text-muted small">Şu Anki Test</div>
+                <div class="fw-bold text-truncate" id="currentTest">-</div>
+              </div>
+              <div class="col-4">
+                <div class="text-muted small">Tahmini Kalan</div>
+                <div class="fw-bold" id="etaTime">-</div>
+              </div>
+            </div>
+            <div class="d-flex gap-2 justify-content-center">
+              <button class="btn btn-warning" id="btnPause">⏸️ Duraklat</button>
+              <button class="btn btn-success d-none" id="btnResume">▶️ Devam Et</button>
+              <button class="btn btn-danger" id="btnStop">🛑 Durdur</button>
+              <a href="result.html" class="btn btn-primary d-none" id="btnResults">📊 Sonuçları Gör</a>
+            </div>
+            <div class="mt-2 text-center">
+              <small class="text-muted">⏱️ Normal testler: 4 dk, Thinking testleri: 5 dk timeout. İlk prompt model yükleme: 5 dk.</small>
+            </div>
+            <div id="thinkingAlert" class="alert alert-info mt-2 d-none">
+              💡 Bu testte <strong>Thinking</strong> kategorisi bulunuyor. Thinking testleri için timeout süresi 5 dakikadır (diğerleri 4 dk).
+            </div>
+          </div>
+        </div>
+
+        <div class="card mb-4">
+          <div class="card-header">
+            <h5 class="mb-0">📝 Canlı Log</h5>
+          </div>
+          <div class="card-body p-0">
+            <div class="log-window" id="logWindow">Test başlatılıyor...\n</div>
+          </div>
+        </div>
+
+        <div class="card mb-4">
+          <div class="card-header">
+            <h5 class="mb-0">🖥️ Sistem Bilgisi</h5>
+          </div>
+          <div class="card-body">
+            <div class="row text-center mb-3" id="systemInfo">
+              <div class="col-3">
+                <div class="text-muted small">Model</div>
+                <div class="fw-bold" id="sysModel">-</div>
+              </div>
+              <div class="col-3">
+                <div class="text-muted small">Boyut</div>
+                <div class="fw-bold" id="sysSize">-</div>
+              </div>
+              <div class="col-3">
+                <div class="text-muted small">GPU VRAM</div>
+                <div class="fw-bold text-success" id="sysVram">-</div>
+              </div>
+              <div class="col-3">
+                <div class="text-muted small">Quantization</div>
+                <div class="fw-bold" id="sysQuant">-</div>
+              </div>
+            </div>
+            <div class="row text-center" id="gpuInfo" style="display:none;">
+              <div class="col-3">
+                <div class="text-muted small">GPU</div>
+                <div class="fw-bold text-primary" id="sysGpu">-</div>
+              </div>
+              <div class="col-3">
+                <div class="text-muted small">GPU Kullanımı</div>
+                <div class="fw-bold" id="sysGpuUtil">-</div>
+              </div>
+              <div class="col-3">
+                <div class="text-muted small">VRAM</div>
+                <div class="fw-bold" id="sysVram2">-</div>
+              </div>
+              <div class="col-3">
+                <div class="text-muted small">Sıcaklık</div>
+                <div class="fw-bold text-warning" id="sysTemp">-</div>
+              </div>
+            </div>
+            <div id="gpuNotAvailable" class="text-center text-muted small mt-2">
+              💡 GPU izleme için backend'i Ollama sunucusunda çalıştırın.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const API_BASE = window.location.origin + '/api';
+    const urlParams = new URLSearchParams(window.location.search);
+    const runId = urlParams.get('run_id');
+    if (!runId) {
+      alert('Run ID eksik! Ana sayfaya yönlendiriliyorsunuz.');
+      window.location.href = 'index.html';
+    }
+
+    let intervalId = null;
+    let startTimestamp = null;
+
+    function formatDuration(seconds) {
+      const m = Math.floor(seconds / 60);
+      const s = Math.floor(seconds % 60);
+      return `${m}:${s.toString().padStart(2, '0')}`;
+    }
+
+    async function fetchStatus() {
+      try {
+        const resp = await fetch(`${API_BASE}/test/status/${runId}`);
+        if (!resp.ok) throw new Error('HTTP ' + resp.status);
+        const data = await resp.json();
+        updateUI(data);
+        if (data.status === 'completed' || data.status === 'error' || data.status === 'cancelled') {
+          clearInterval(intervalId);
+          document.getElementById('btnPause').classList.add('d-none');
+          document.getElementById('btnResume').classList.add('d-none');
+          document.getElementById('btnStop').classList.add('d-none');
+          document.getElementById('btnResults').classList.remove('d-none');
+          document.getElementById('statusIndicator').classList.remove('status-running', 'status-paused');
+          if (data.status === 'completed') {
+            document.getElementById('statusIndicator').classList.add('status-completed');
+          } else {
+            document.getElementById('statusIndicator').classList.add('status-error');
+          }
+        }
+      } catch (e) {
+        console.error('Status fetch error:', e);
+      }
+    }
+
+    function updateUI(data) {
+      const { total, completed, current_prompt_id, current_category, status, logs, start_time, model, categories } = data;
+
+      // Thinking alert
+      const thinkingAlert = document.getElementById('thinkingAlert');
+      if (thinkingAlert && categories && categories.includes('thinking')) {
+        thinkingAlert.classList.remove('d-none');
+      }
+
+      // Progress
+      const pct = total > 0 ? Math.round((completed / total) * 100) : 0;
+      document.getElementById('progressBar').style.width = pct + '%';
+      document.getElementById('progressBar').textContent = pct + '%';
+      document.getElementById('progressLabel').textContent = `${completed} / ${total} tamamlandı`;
+      document.getElementById('progressPercent').textContent = pct + '%';
+
+      // Status
+      const statusText = document.getElementById('statusText');
+      const indicator = document.getElementById('statusIndicator');
+      if (status === 'running') {
+        statusText.textContent = 'Test çalışıyor...';
+        indicator.className = 'status-indicator status-running';
+        document.getElementById('btnPause').classList.remove('d-none');
+        document.getElementById('btnResume').classList.add('d-none');
+      } else if (status === 'paused') {
+        statusText.textContent = 'Duraklatıldı';
+        indicator.className = 'status-indicator status-paused';
+        document.getElementById('btnPause').classList.add('d-none');
+        document.getElementById('btnResume').classList.remove('d-none');
+      } else if (status === 'completed') {
+        statusText.textContent = '✅ Test tamamlandı!';
+      } else if (status === 'error') {
+        statusText.textContent = '❌ Hata oluştu!';
+      } else if (status === 'cancelled') {
+        statusText.textContent = '🛑 Test durduruldu!';
+        indicator.className = 'status-indicator status-error';
+        document.getElementById('btnPause').classList.add('d-none');
+        document.getElementById('btnResume').classList.add('d-none');
+        document.getElementById('btnStop').classList.add('d-none');
+        document.getElementById('btnResults').classList.remove('d-none');
+      }
+
+      // Current test
+      document.getElementById('currentTest').textContent = current_prompt_id ? `${current_category}: ${current_prompt_id}` : '-';
+      document.getElementById('modelBadge').textContent = `Model: ${model || '-'}`;
+
+      // Elapsed
+      if (start_time) {
+        if (!startTimestamp) startTimestamp = start_time;
+        const elapsed = Date.now() / 1000 - start_time;
+        document.getElementById('elapsedTime').textContent = formatDuration(elapsed);
+
+        // ETA
+        if (completed > 0 && status === 'running') {
+          const avg = elapsed / completed;
+          const remaining = (total - completed) * avg;
+          document.getElementById('etaTime').textContent = formatDuration(remaining);
+        }
+      }
+
+      // Logs
+      const logWindow = document.getElementById('logWindow');
+      if (Array.isArray(logs)) {
+        const logText = logs.join('\n') + '\n';
+        if (logWindow.textContent !== logText) {
+          logWindow.textContent = logText;
+          logWindow.scrollTop = logWindow.scrollHeight;
+        }
+      }
+    }
+
+    async function pauseTest() {
+      try {
+        await fetch(`${API_BASE}/test/pause/${runId}`, { method: 'POST' });
+      } catch (e) { console.error(e); }
+    }
+
+    async function resumeTest() {
+      try {
+        await fetch(`${API_BASE}/test/resume/${runId}`, { method: 'POST' });
+      } catch (e) { console.error(e); }
+    }
+
+    async function stopTest() {
+      if (!confirm('Testi durdurmak istediğinize emin misiniz? Durdurulan test kaldığı yerden devam edemez.')) {
+        return;
+      }
+      try {
+        await fetch(`${API_BASE}/test/stop/${runId}`, { method: 'POST' });
+        document.getElementById('btnPause').classList.add('d-none');
+        document.getElementById('btnResume').classList.add('d-none');
+        document.getElementById('btnStop').classList.add('d-none');
+      } catch (e) { console.error(e); }
+    }
+
+    async function fetchSystemInfo() {
+      try {
+        const resp = await fetch(`${API_BASE}/admin/ollama-ps`);
+        if (!resp.ok) return;
+        const data = await resp.json();
+        if (data.running_models && data.running_models.length > 0) {
+          const m = data.running_models[0];
+          document.getElementById('sysModel').textContent = m.name || '-';
+          document.getElementById('sysSize').textContent = m.size ? (m.size / (1024**3)).toFixed(1) + ' GB' : '-';
+          document.getElementById('sysVram').textContent = m.size_vram ? (m.size_vram / (1024**3)).toFixed(1) + ' GB' : '-';
+          document.getElementById('sysQuant').textContent = m.details?.quantization_level || '-';
+        }
+      } catch (e) { console.error('System info fetch error:', e); }
+    }
+
+    async function fetchGpuInfo() {
+      try {
+        const resp = await fetch(`${API_BASE}/admin/gpu-info`);
+        if (!resp.ok) return;
+        const data = await resp.json();
+        if (data.local_gpu && data.local_gpu.available && data.local_gpu.gpus.length > 0) {
+          const gpu = data.local_gpu.gpus[0];
+          document.getElementById('sysGpu').textContent = gpu.name;
+          document.getElementById('sysGpuUtil').textContent = gpu.gpu_utilization + '%';
+          document.getElementById('sysVram2').textContent = `${(gpu.memory_used_mb / 1024).toFixed(1)} / ${(gpu.memory_total_mb / 1024).toFixed(1)} GB`;
+          document.getElementById('sysTemp').textContent = gpu.temperature_c + '°C';
+          document.getElementById('gpuInfo').style.display = 'flex';
+          document.getElementById('gpuNotAvailable').style.display = 'none';
+        }
+      } catch (e) { console.error('GPU info fetch error:', e); }
+    }
+
+    document.getElementById('btnPause').addEventListener('click', pauseTest);
+    document.getElementById('btnResume').addEventListener('click', resumeTest);
+    document.getElementById('btnStop').addEventListener('click', stopTest);
+    document.getElementById('btnResults').addEventListener('click', (e) => {
+      e.preventDefault();
+      window.location.href = `result.html?id=${runId}`;
+    });
+
+    // Poll every 2 seconds
+    fetchStatus();
+    intervalId = setInterval(fetchStatus, 2000);
+    fetchSystemInfo();
+    setInterval(fetchSystemInfo, 5000);
+    fetchGpuInfo();
+    setInterval(fetchGpuInfo, 5000);
+  </script>
+</body>
+</html>

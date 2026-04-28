@@ -1,0 +1,39 @@
+{
+  "run_id": "07c7d667",
+  "model": "Qwen2.5-Coder:7b",
+  "host": "http://192.168.240.30:11434",
+  "categories": [
+    "embedding"
+  ],
+  "total": 4,
+  "completed": 4,
+  "timeouts": 0,
+  "current_prompt_id": "embedding_multilingual",
+  "current_category": "embedding",
+  "status": "completed",
+  "start_time": 1777352169.4456053,
+  "end_time": 1777352277.2463245,
+  "logs": [
+    "[WARMUP] Model belleğe yükleniyor, lütfen bekleyin...",
+    "  -> Warmup OK",
+    "[1/4] embedding_semantic_search | embedding | Running...",
+    "  -> OK (7.1s)",
+    "[2/4] embedding_similarity_ranking | embedding | Running...",
+    "  -> OK (10.0s)",
+    "[3/4] embedding_rag_context | embedding | Running...",
+    "  -> OK (9.8s)",
+    "[4/4] embedding_multilingual | embedding | Running...",
+    "  -> OK (9.8s)",
+    "TEST COMPLETED. Total: 1.1 min | Timeouts: 0",
+    "[1/4] embedding_semantic_search | embedding | Running...",
+    "  -> OK (7.5s)",
+    "[2/4] embedding_similarity_ranking | embedding | Running...",
+    "  -> OK (13.4s)",
+    "[3/4] embedding_rag_context | embedding | Running...",
+    "  -> OK (9.5s)",
+    "[4/4] embedding_multilingual | embedding | Running...",
+    "  -> OK (9.8s)",
+    "TEST COMPLETED. Total: 1.8 min"
+  ],
+  "results_dir": "results\\Qwen2.5-Coder_7b_20260428_075714"
+}

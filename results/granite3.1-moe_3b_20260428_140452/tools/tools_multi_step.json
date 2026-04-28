@@ -1,0 +1,22 @@
+{
+  "id": "tools_multi_step",
+  "category": "tools",
+  "prompt": "Kullanıcı: 'Son 3 günün satış raporunu çek ve toplamı email olarak gönder.' Mevcut araçların:\n1. `get_sales(start_date: string, end_date: string) -> list[dict]`\n2. `calculate_sum(items: list[float]) -> float`\n3. `send_email(to: string, subject: string, body: string) -> bool`\n\nBu işlemi tamamlamak için gereken TÜM tool call'ları sırayla üret. Her adımda bir önceki adımın çıktısını nasıl kullanacağını belirt.\n\nFormat (array):\n```json\n[\n  {\"tool\": \"...\", \"parameters\": {...}, \"reason\": \"...\"},\n  ...\n]\n```",
+  "response": "İşlem listesini döndürerek, TÜM tool call'larımızın ayrı bir formatıdır:\n\n1. `get_sales(start_date: string, end_date: string) -> list[dict]`\n   - Örneğin:\n     ```json\n     [\n       {\"tool\": \"get_sales\", \"parameters\": {\"start_date\": \"2023-03-01\", \"end_date\": \"2023-03-03\"}, \"reason\": \"Son 3 günün satış raporunu çekmek için gereken verileri almak istediğimiz.\"}\n     ]\n     ```\n\n2. `calculate_sum(items: list[float]) -> float`\n   - Örneğin:\n     ```json\n     [\n       {\"tool\": \"calculate_sum\", \"parameters\": [{\"value\": 10}, {\"value\": 20}], \"reason\": \"Son 3 günün satış raporunu çekmek için, tüm verilerin sum sayfasını almak istediğimiz.\"}\n     ]\n     ```\n\n3. `send_email(to: string, subject: string, body: string) -> bool`\n   - Örneğin:\n     ```json\n     [\n       {\"tool\": \"send_email\", \"parameters\": {\"to\": \"user@example.com\", \"subject\": \"Son 3 Gün Satış Raporu\", \"body\": \"Bu email, Son 3 günün satış raporunu çekilmiştir.\"}, \"reason\": \"Son 3 günün satış raporunu göndermek için, email oluşturulduğumuz ve gönderildiğimiz.\"}\n     ]\n     ```\n\nTüm tool call'larımızın ayrı bir formatıdır:\n\n```json\n[\n  {\"tool\": \"get_sales\", \"parameters\": {\"start_date\": \"2023-03-01\", \"end_date\": \"2023-03-03\"}, \"reason\": \"Son 3 günün satış raporunu çekmek için gereken verileri almak istediğimiz.\"},\n  {\"tool\": \"calculate_sum\", \"parameters\": [{\"value\": 10}, {\"value\": 20}], \"reason\": \"Son 3 günün satış raporunu çekmek için, tüm verilerin sum sayfasını almak istediğimiz.\"},\n  {\"tool\": \"send_email\", \"parameters\": {\"to\": \"user@example.com\", \"subject\": \"Son 3 Gün Satış Raporu\", \"body\": \"Bu email, Son 3 günün satış raporunu çekilmiştir.\"}, \"reason\": \"Son 3 günün satış raporunu göndermek için, email oluşturulduğumuz ve gönderildiğimiz.\"}\n]\n```",
+  "duration_sec": 4.7,
+  "timestamp": "2026-04-28T14:05:05.305010",
+  "expected_focus": [
+    "Multi-step chaining",
+    "Output dependency",
+    "Reasoning",
+    "JSON array schema"
+  ],
+  "ai_evaluation": {
+    "correctness": "pending",
+    "hallucination": null,
+    "security_aware": null,
+    "completeness": "pending",
+    "idiomatic": null,
+    "notes": "AI evaluation pending."
+  }
+}

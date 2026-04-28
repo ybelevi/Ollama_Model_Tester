@@ -1,0 +1,22 @@
+{
+  "id": "tools_wrong_rejection",
+  "category": "tools",
+  "prompt": "Kullanıcı: 'Bana şirketin tüm çalışanlarının maaşlarını sırala.' Mevcut araçların: `get_weather`, `search_file`, `send_email`. İstenen işlevi yapacak araç mevcut değil. Ne yaparsın?\n\nEğer uygun araç yoksa:\n1. JSON tool call ÜRETME.\n2. Kullanıcıya durumu açıkla.\n3. Alternatif bir çözüm öner.\n\nEğer var olmayan bir araç çağrısı üretirsen (örn: `get_salaries`), bu halüsinasyondur.",
+  "response": "If the available actions are not sufficient, here are three alternative solutions to help you manage employee salaries:\n\n1. **JSON Tool Call ÜRETME**: You can use a JSON API client like `curl` or a dedicated library in your preferred programming language (e.g., Python's `requests`, Java's `OkHttp`) to fetch and sort the employee salaries. Here's an example using Python:\n\n    ```python\n    import requests\n\n    def get_salaries(url):\n        response = requests.get(url)\n        data = response.json()\n        sorted_salaries = sorted(data, key=lambda x: x['salary'], reverse=True)\n        return sorted_salaries\n\n    # Usage\n    salaries = get_salaries('https://api.example.com/employees')\n    print(salaries)\n    ```\n\n2. **User Notification**: You can create a simple notification system to inform the user about the available actions and their descriptions. This can be done using email, SMS, or in-app notifications. For instance, you can send an email with a detailed explanation of each action:\n\n    - `send_email` function:\n\n        ```python\n        import smtplib\n\n        def send_email(to_email, subject, message):\n            from_email = 'your_email@example.com'\n            smtp_server = 'smtp.example.com'\n\n            msg = f\"Subject: {subject}\\n\\n{message}\"\n            server = smtplib.SMTP(smtp_server)\n            server.sendmail(from_email, to_email, msg)\n            server.quit()\n\n        # Usage\n        send_email('user@example.com', 'Employee Salary Management Actions', 'Here are the available actions and their descriptions:\\n\\n1. get_weather\\n2. search_file\\n3. send_email')\n        ```\n\n3. **Alternative Solution: Custom Function**\n\n    You can create a custom function that wraps around the existing action functions (`get_weather`, `search_file`, `send_email`) and provides additional functionality, such as sorting salaries based on their amounts. Here's an example in Python:\n\n    ```python\n    def manage_salaries(action):\n        if action == 'get_salaries':\n            # Fetch and sort employee salaries using a JSON API client\n            pass\n        elif action == 'search_file':\n            # Search for specific files within the company directory\n            pass\n        elif action == 'send_email':\n            # Send an email notification to the user about available actions\n            send_email('user@example.com', 'Employee Salary Management Actions', 'Here are the available actions and their descriptions:\\n\\n1. get_weather\\n2. search_file\\n3. send_email')\n        else:\n            print(f\"Invalid action: {action}\")\n\n    # Usage\n    manage_salaries('get_salaries')\n    ```\n\nThese alternative solutions should help you manage employee salaries more effectively, even if the available actions are not sufficient for your needs.",
+  "duration_sec": 4.6,
+  "timestamp": "2026-04-28T14:04:50.282683",
+  "expected_focus": [
+    "Tool rejection",
+    "No hallucinated tool",
+    "User communication",
+    "Alternative suggestion"
+  ],
+  "ai_evaluation": {
+    "correctness": "pending",
+    "hallucination": null,
+    "security_aware": null,
+    "completeness": "pending",
+    "idiomatic": null,
+    "notes": "AI evaluation pending."
+  }
+}

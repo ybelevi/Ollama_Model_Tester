@@ -1,0 +1,22 @@
+{
+  "id": "thinking_constraint_optimization",
+  "category": "thinking",
+  "prompt": "Sınırlı kaynaklarla optimal çözüm üret:\n\nBir kurye şirketi var. 3 paket teslim edilecek:\n- Paket A: 2kg, 50 TL kazanç, 30 dk süre\n- Paket B: 5kg, 120 TL kazanç, 60 dk süre\n- Paket C: 3kg, 80 TL kazanç, 45 dk süre\n\nKısıtlar:\n- Kuryenin çantası max 6kg taşıyabilir.\n- Toplam teslimat süresi max 90 dk olmalı.\n\nHangi paketleri seçmeli ki MAKSİMUM kazanç elde edilsin? Adım adım düşün, brute force yerine mantıksal eleme yap.",
+  "response": "[TIMEOUT] Model 180 saniye içinde cevap vermedi.",
+  "duration_sec": 180.0,
+  "timestamp": "2026-04-27T23:55:09.901230",
+  "expected_focus": [
+    "Constraint analysis",
+    "Knapsack reasoning",
+    "Logical elimination",
+    "Optimal solution proof"
+  ],
+  "ai_evaluation": {
+    "correctness": "timeout",
+    "hallucination": false,
+    "security_aware": null,
+    "completeness": "timeout",
+    "idiomatic": null,
+    "notes": "Prompt 180 sn timeout'a uğradı."
+  }
+}

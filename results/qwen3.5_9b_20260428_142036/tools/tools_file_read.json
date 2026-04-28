@@ -1,0 +1,21 @@
+{
+  "id": "tools_file_read",
+  "category": "tools",
+  "prompt": "Kullanıcı: 'config.json dosyasındaki database port değeri nedir?' Mevcut araçların: `read_file(path: string) -> string` ve `search_file(path: string, keyword: string) -> list[int]`. Hangi aracı, hangi parametrelerle çağırırsın? SADECE JSON formatında tool call üret. Doğrudan cevap verme, önce dosyayı okumalısın.\n\nFormat:\n```json\n{\n  \"tool\": \"...\",\n  \"parameters\": {\n    \"...\": \"...\"\n  }\n}\n```",
+  "response": "```json\n{\n  \"tool\": \"read_file\",\n  \"parameters\": {\n    \"path\": \"config.json\"\n  }\n}\n```",
+  "duration_sec": 65.6,
+  "timestamp": "2026-04-28T14:22:26.963114",
+  "expected_focus": [
+    "Tool selection reasoning",
+    "JSON schema",
+    "Sequential tool usage"
+  ],
+  "ai_evaluation": {
+    "correctness": "pending",
+    "hallucination": null,
+    "security_aware": null,
+    "completeness": "pending",
+    "idiomatic": null,
+    "notes": "AI evaluation pending."
+  }
+}

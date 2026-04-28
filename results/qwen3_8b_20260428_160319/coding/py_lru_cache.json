@@ -1,0 +1,21 @@
+{
+  "id": "py_lru_cache",
+  "category": "coding",
+  "prompt": "Python'da thread-safe bir LRU Cache implemente et. `get`, `put`, `delete` metodları olsun. Time complexity O(1) olmalı. Sadece Python standard kütüphanelerini kullan. Kodun en üstüne kısa bir docstring koy, başka açıklama yazma.",
+  "response": "```python\nimport threading\nfrom collections import OrderedDict\n\nclass ThreadSafeLRUCache:\n    \"\"\"\n    Thread-safe LRU Cache with O(1) time complexity for get, put, and delete operations.\n    \"\"\"\n    def __init__(self, max_size):\n        self.cache = OrderedDict()\n        self.max_size = max_size\n        self.lock = threading.Lock()\n\n    def get(self, key):\n        with self.lock:\n            if key in self.cache:\n                value = self.cache[key]\n                self.cache.move_to_end(key)\n                return value\n            return None\n\n    def put(self, key, value):\n        with self.lock:\n            if key in self.cache:\n                self.cache[key] = value\n                self.cache.move_to_end(key)\n            else:\n                self.cache[key] = value\n                if len(self.cache) > self.max_size:\n                    self.cache.popitem(last=False)\n\n    def delete(self, key):\n        with self.lock:\n            if key in self.cache:\n                del self.cache[key]\n```",
+  "duration_sec": 53.7,
+  "timestamp": "2026-04-28T16:04:41.141137",
+  "expected_focus": [
+    "OrderedDict veya custom doubly-linked list",
+    "threading.Lock/RLock",
+    "O(1) complexity"
+  ],
+  "ai_evaluation": {
+    "correctness": "pending",
+    "hallucination": null,
+    "security_aware": null,
+    "completeness": "pending",
+    "idiomatic": null,
+    "notes": "AI evaluation pending."
+  }
+}

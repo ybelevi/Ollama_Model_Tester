@@ -1,0 +1,12 @@
+{
+  "run_id": "64bcb91f",
+  "model": "granite4:3b",
+  "host": "http://192.168.240.30:11434",
+  "categories": [
+    "tools"
+  ],
+  "total_prompts": 6,
+  "start_time": "2026-04-28T14:14:52.931665",
+  "end_time": "2026-04-28T14:15:13.934426",
+  "duration_sec": 59.4
+}

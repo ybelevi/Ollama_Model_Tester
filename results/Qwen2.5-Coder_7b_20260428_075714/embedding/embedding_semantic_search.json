@@ -1,0 +1,21 @@
+{
+  "id": "embedding_semantic_search",
+  "category": "embedding",
+  "prompt": "Aşağıdaki dokümanlar ve kullanıcı sorusu verilmiş. Semantic similarity mantığıyla (kelime eşleşmesi değil, anlam eşleşmesi) en uygun 3 dokümanı sırala:\n\nDokümanlar:\n1. 'Faturalarınızı kredi kartı, havale veya otomatik ödeme ile ödeyebilirsiniz.'\n2. 'Yıllık abonelikte %20 indirim fırsatını kaçırmayın.'\n3. 'Şifrenizi unuttuysanız e-posta adresinize reset linki gönderiyoruz.'\n4. 'Teknik destek ekibimize hafta içi 09:00-18:00 arası ulaşabilirsiniz.'\n5. 'Aylık kullanım limitinizi kontrol panelinden takip edebilirsiniz.'\n\nSoru: 'Fatura ödeme seçenekleri neler?'\n\nCevabın SADECE doküman numaralarını ve nedenini içersin. '1 numaralı doküman çünkü...' şeklinde.",
+  "response": "1. numaralı doküman çünkü: Bu doküman, faturayı ödeme seçeneklerine (kredi kartı, havale veya otomatik ödeme) odaklanmaktadır. Sorunun sorumluluk alanına en uygun olduğunu göstermektedir.\n\n2. numaralı doküman çünkü: Bu doküman, abonelik indirimleri hakkında bilgi vermektedir. Ancak, fatura ödeme seçeneklerine ilgili bir şey içermediği için en uygun olmaz.\n\n3. numaralı doküman çünkü: Bu doküman şifre sıfırlama sürecini açıklamaktadır. Fatura ödeme seçenekleriyle ilgisi bulunmamakla birlikte, genel bilgi vermektedir.\n\n4. numaralı doküman çünkü: Bu doküman teknik destek ile ilgili bilgi vermektedir. Sorunun sorumluluk alanına en uygun olmaz.\n\n5. numaralı doküman çünkü: Bu doküman aylık kullanım limitini kontrol etme konusunda bilgi vermektedir. Fatura ödeme seçenekleriyle ilgisi bulunmamakla birlikte, genel bilgi vermektedir.",
+  "duration_sec": 7.5,
+  "timestamp": "2026-04-28T07:57:22.446861",
+  "expected_focus": [
+    "Semantic matching",
+    "Not keyword matching",
+    "Ranking justification"
+  ],
+  "ai_evaluation": {
+    "correctness": "pending",
+    "hallucination": null,
+    "security_aware": null,
+    "completeness": "pending",
+    "idiomatic": null,
+    "notes": "AI evaluation pending."
+  }
+}

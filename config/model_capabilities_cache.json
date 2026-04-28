@@ -1,0 +1,55 @@
+{
+  "qwen3": [
+    "tools",
+    "thinking"
+  ],
+  "mistral-nemo": [
+    "tools"
+  ],
+  "granite3.1-moe": [
+    "tools"
+  ],
+  "granite4": [
+    "tools"
+  ],
+  "qwen3-vl": [
+    "vision",
+    "tools",
+    "thinking"
+  ],
+  "ministral-3": [
+    "vision",
+    "tools"
+  ],
+  "lfm2.5-thinking": [
+    "tools",
+    "thinking"
+  ],
+  "gemma4": [
+    "vision",
+    "tools",
+    "thinking"
+  ],
+  "mistral": [
+    "tools"
+  ],
+  "deepseek-r1": [
+    "tools",
+    "thinking"
+  ],
+  "granite3.3": [
+    "tools"
+  ],
+  "nemotron-3-nano": [
+    "tools",
+    "thinking"
+  ],
+  "Qwen2.5-Coder": [
+    "tools"
+  ],
+  "qwen3.5": [
+    "vision",
+    "tools",
+    "thinking"
+  ]
+}

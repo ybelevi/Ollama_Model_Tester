@@ -1,0 +1,58 @@
+[
+  {
+    "id": "vision_ui_elements",
+    "category": "vision",
+    "prompt": "Sen bir ekran görüntüsü analiz ediyorsun. Görüntüde şu UI elemanları var: bir login formu (username input, password input, 'Giriş Yap' butonu), üstte bir navbar (logo + 3 link), ve sağ altta bir 'Yardım' chat ikonu. Bu elemanların HTML yapısını ve ARIA erişilebilirlik etiketlerini yaz. Eğer bir ekran görüntüsü analizi yapamıyorsan, bunu belirt ve alternatif olarak sadece metin tabanlı UI açıklamasından HTML çıkarımı yap.",
+    "depends_on": null,
+    "expected_focus": ["HTML semantic tags", "ARIA labels", "Form accessibility", "Vision capability honesty"]
+  },
+  {
+    "id": "vision_css_bug",
+    "category": "vision",
+    "prompt": "Bir web sayfasının ekran görüntüsünü analiz ediyorsun. Görüntüde: bir modal pencere açık ama arka plan hâlâ scroll edilebiliyor, modalın kapatma butonu (X) sağ üst köşede yok, ve mobil görünümde butonlar ekran dışına taşmış. Bu hataların CSS düzeltmelerini yaz. Eğer görüntü analizi yapamıyorsan, bunu belirt.",
+    "depends_on": null,
+    "expected_focus": ["overflow: hidden on body", "position: fixed modal", "Responsive media queries", "Vision honesty"]
+  },
+  {
+    "id": "vision_diagram_flow",
+    "category": "vision",
+    "prompt": "Bir akış şeması görüntüsünü okuyorsun. Şemada: 'Start' → 'Kullanıcı Girişi' (diamond) → 'Doğru mu?' (evet/no) → Evet: 'Dashboard', Hayır: 'Hata Mesajı' → 'End'. Bu akışı Python pseudo-code olarak yaz. Eğer görüntü analizi yapamıyorsan, bunu açıkça belirt.",
+    "depends_on": null,
+    "expected_focus": ["Flowchart to code", "Conditional logic", "Loop structure", "Vision honesty"]
+  },
+  {
+    "id": "vision_ocr_code",
+    "category": "vision",
+    "prompt": "Bir ekran görüntüsündeki (screenshot) kodu OCR ile okuyorsun. Görüntüdeki kod şu şekilde görünüyor (metin temsili):\n\n```\ndef calculate(x, y):\n    return x + y * 2\n```\n\nBu kodda bir mantık hatası var (muhtemelen `x + (y * 2)` yerine `(x + y) * 2` olmalıydı). Hatayı bul ve düzelt. Eğer görüntü/OCR analizi yapamıyorsan, bunu belirt.",
+    "depends_on": null,
+    "expected_focus": ["OCR accuracy", "Operator precedence bug", "Code correction", "Vision honesty"]
+  },
+  {
+    "id": "vision_chart_data",
+    "category": "vision",
+    "prompt": "Bir bar chart görüntüsünü analiz ediyorsun. X ekseninde: Ocak, Şubat, Mart, Nisan, Mayıs. Y ekseni: Satış (bin TL). Bar yükseklikleri: Ocak=45, Şubat=52, Mart=48, Nisan=60, Mayıs=55. Bu veriyi Python dictionary olarak çıkar ve en yüksek satış ayını belirt. Eğer görüntü analizi yapamıyorsan, bunu belirt.",
+    "depends_on": null,
+    "expected_focus": ["Data extraction", "Chart reading", "Python dict", "Vision honesty"]
+  },
+  {
+    "id": "vision_accessibility",
+    "category": "vision",
+    "prompt": "Bir web formunun ekran görüntüsünü analiz ediyorsun. Görüntüde: input alanlarında label yok (sadece placeholder), renk kontrastı düşük (açık gri yazı beyaz arka plan), ve 'Gönder' butonu sadece ikon (metin yok). Bu erişilebilirlik (a11y) hatalarını listele ve düzelt. Eğer görüntü analizi yapamıyorsan, bunu belirt.",
+    "depends_on": null,
+    "expected_focus": ["WCAG contrast", "Label association", "Icon-only button a11y", "Vision honesty"]
+  },
+  {
+    "id": "vision_responsive_check",
+    "category": "vision",
+    "prompt": "Bir web sayfasının iki ekran görüntüsünü karşılaştırıyorsun: Desktop (1920px) ve Mobile (375px). Desktop'ta 3 sütunlu grid düzgün görünürken, Mobile'de sütunlar ekran dışına taşmış ve font boyutları çok küçük. Bu responsive hataların CSS düzeltmelerini yaz (flex/grid + media query). Eğer görüntü analizi yapamıyorsan, bunu belirt.",
+    "depends_on": null,
+    "expected_focus": ["Media queries", "Flex/Grid responsive", "Viewport meta", "Vision honesty"]
+  },
+  {
+    "id": "vision_mock_to_html",
+    "category": "vision",
+    "prompt": "Bir wireframe/mockup görüntüsünü analiz ediyorsun. Görüntüde: üstte header (logo + nav), ortada iki sütunlu içerik (solda metin, sağda resim), altta footer (3 link sütunu). Bu yapının semantic HTML5 iskeletini ve temel CSS grid/flex yapısını yaz. Eğer görüntü analizi yapamıyorsan, bunu belirt.",
+    "depends_on": null,
+    "expected_focus": ["Semantic HTML5", "CSS Grid/Flex layout", "Wireframe interpretation", "Vision honesty"]
+  }
+]

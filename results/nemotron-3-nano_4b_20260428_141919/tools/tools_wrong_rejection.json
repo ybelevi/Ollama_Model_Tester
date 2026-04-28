@@ -1,0 +1,22 @@
+{
+  "id": "tools_wrong_rejection",
+  "category": "tools",
+  "prompt": "Kullanıcı: 'Bana şirketin tüm çalışanlarının maaşlarını sırala.' Mevcut araçların: `get_weather`, `search_file`, `send_email`. İstenen işlevi yapacak araç mevcut değil. Ne yaparsın?\n\nEğer uygun araç yoksa:\n1. JSON tool call ÜRETME.\n2. Kullanıcıya durumu açıkla.\n3. Alternatif bir çözüm öner.\n\nEğer var olmayan bir araç çağrısı üretirsen (örn: `get_salaries`), bu halüsinasyondur.",
+  "response": "We need to respond according to instructions. The user asks to sort all employees' salaries. Available tools: get_weather, search_file, send_email. None can retrieve salaries. So we must:\n\n1. JSON tool call? Actually \"JSON tool call ÜRETME.\" Means we should output a JSON tool call? But there is no tool for that. Probably we need to output a JSON indicating no tool call? The instruction: \"Eğer uygun araç yoksa: 1. JSON tool call ÜRETME. 2. Kullanıcıya durumu açıkla. 3. Alternatif bir çözüm öner.\"\n\nThus we need to produce a JSON tool call? But there is no tool. Maybe we output something like {\"tool_call\": null}? Or maybe we just output a JSON with message? The instruction ambiguous. Probably we need to output a JSON indicating no tool call, then explain to user, then suggest alternative.\n\nThus produce:\n\n{\n \"tool_call\": null,\n \"message\": \"I cannot retrieve salaries with available tools.\",\n \"suggestion\": \"You could provide the data or use a different tool.\"\n}\n\nBut they said \"JSON tool call ÜRETME.\" Might mean we need to output a JSON tool call (maybe empty). Let's output:\n\n{\n \"tool_call\": null\n}\n\nThen explanation and suggestion.\n\nThus final answer: JSON tool call, then explanation, then suggestion.\n\nLet's produce:\n\n{\n \"tool_call\": null\n}\n\nThen text.\n\nProceed.\n</think>\n{\n  \"tool_call\": null\n}\n\nKullanıcı, mevcut araçlar (`get_weather`, `search_file`, `send_email`) ile çalışan maaşlarını sıralamak için bir araç bulunmamaktadır. Bu yüzden bu istiğe yönelik bir araç çağrısı yapılamaz.\n\n**Alternatif çözüm önerisi:**  \n- Maaş verilerini doğrudan kullanıcıya paylaşırsanız (örneğin bir dosya ya da tablo), `search_file` araçını kullanarak bu dosyayı okumak ve veriyi işleyebilirsiniz.  \n- Ya da, bir API veya veri depolama araçu (örneğin `get_salaries`) gibi bir uygun araç eklenirse, ona göre işlevi yapabilirsiniz.  \n\nBu şekilde, mevcut araçların sınırlamalarından kaçınarak istediğiniz işlevi yerine getirebilirsiniz.",
+  "duration_sec": 9.2,
+  "timestamp": "2026-04-28T14:19:44.836612",
+  "expected_focus": [
+    "Tool rejection",
+    "No hallucinated tool",
+    "User communication",
+    "Alternative suggestion"
+  ],
+  "ai_evaluation": {
+    "correctness": "pending",
+    "hallucination": null,
+    "security_aware": null,
+    "completeness": "pending",
+    "idiomatic": null,
+    "notes": "AI evaluation pending."
+  }
+}

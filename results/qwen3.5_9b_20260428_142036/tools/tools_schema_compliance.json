@@ -1,0 +1,21 @@
+{
+  "id": "tools_schema_compliance",
+  "category": "tools",
+  "prompt": "Aşağıdaki tool call JSON'unu schema'ya uygunluğu açısından incele. Hata varsa bul ve düzelt.\n\nSchema:\n```json\n{\n  \"tool\": \"string\",\n  \"parameters\": {\n    \"city\": \"string\"\n  }\n}\n```\n\nVerilen tool call:\n```json\n{\n  \"tool\": \"get_weather\",\n  \"params\": {\n    \"city\": \"Istanbul\"\n  }\n}\n```\n\nHataları listele ve düzeltilmiş JSON'u yaz.",
+  "response": "**Hatalar:**\n\n1.  **Anahtar İsmi Uyuşmazlığı:** Schema'da parametrelerin bulunduğu anahtarın adı `\"parameters\"` olarak tanımlanmıştır, ancak verilen tool call'da bu anahtar `\"params\"` olarak kullanılmıştır.\n\n**Düzeltilmiş JSON:**\n\n```json\n{\n  \"tool\": \"get_weather\",\n  \"parameters\": {\n    \"city\": \"Istanbul\"\n  }\n}\n```",
+  "duration_sec": 36.8,
+  "timestamp": "2026-04-28T14:26:28.561723",
+  "expected_focus": [
+    "Schema validation",
+    "Field name mismatch",
+    "JSON correction"
+  ],
+  "ai_evaluation": {
+    "correctness": "pending",
+    "hallucination": null,
+    "security_aware": null,
+    "completeness": "pending",
+    "idiomatic": null,
+    "notes": "AI evaluation pending."
+  }
+}

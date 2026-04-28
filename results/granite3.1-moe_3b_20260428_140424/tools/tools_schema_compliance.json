@@ -1,0 +1,21 @@
+{
+  "id": "tools_schema_compliance",
+  "category": "tools",
+  "prompt": "Aşağıdaki tool call JSON'unu schema'ya uygunluğu açısından incele. Hata varsa bul ve düzelt.\n\nSchema:\n```json\n{\n  \"tool\": \"string\",\n  \"parameters\": {\n    \"city\": \"string\"\n  }\n}\n```\n\nVerilen tool call:\n```json\n{\n  \"tool\": \"get_weather\",\n  \"params\": {\n    \"city\": \"Istanbul\"\n  }\n}\n```\n\nHataları listele ve düzeltilmiş JSON'u yaz.",
+  "response": "Düzeltme:\n\n```json\n{\n  \"tool\": \"get_weather\",\n  \"params\": {\n    \"city\": \"Istanbul\"\n  },\n  \"errors\": [\n    {\n      \"code\": \"INVALID_CITY_NAME\",\n      \"message\": \"The provided city name 'Istanbul' is not recognized. Please ensure the city name is spelled correctly and is supported by the weather service.\"\n    }\n  ]\n}\n```",
+  "duration_sec": 1.0,
+  "timestamp": "2026-04-28T14:04:51.768361",
+  "expected_focus": [
+    "Schema validation",
+    "Field name mismatch",
+    "JSON correction"
+  ],
+  "ai_evaluation": {
+    "correctness": "pending",
+    "hallucination": null,
+    "security_aware": null,
+    "completeness": "pending",
+    "idiomatic": null,
+    "notes": "AI evaluation pending."
+  }
+}

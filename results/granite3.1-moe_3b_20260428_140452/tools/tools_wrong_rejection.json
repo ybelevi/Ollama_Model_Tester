@@ -1,0 +1,22 @@
+{
+  "id": "tools_wrong_rejection",
+  "category": "tools",
+  "prompt": "Kullanıcı: 'Bana şirketin tüm çalışanlarının maaşlarını sırala.' Mevcut araçların: `get_weather`, `search_file`, `send_email`. İstenen işlevi yapacak araç mevcut değil. Ne yaparsın?\n\nEğer uygun araç yoksa:\n1. JSON tool call ÜRETME.\n2. Kullanıcıya durumu açıkla.\n3. Alternatif bir çözüm öner.\n\nEğer var olmayan bir araç çağrısı üretirsen (örn: `get_salaries`), bu halüsinasyondur.",
+  "response": "Eğer uygun araç yoksa, her şeyi aşağıdaki durumlarıya göre anımsatabilir:\n\n1. **JSON Tool Call ÜRETME**: Aşağıdaki adımları uygulayabilirsiniz:\n   - `get_weather` aracının JSON dosyasını oluşturur.\n   - `search_file` aracının JSON dosyasına ekleyin.\n   - `send_email` aracının bir e-posta göndermesi için JSON dosyasını kullanır.\n\n2. **Kullanıcıya Durumu Açıkla**: Bu durum, kullanıcının çalışanların maaşları sıralaması için bir şekilde açıklayabilirsiniz:\n   - `get_salaries` aracının çalışanların maaşlarını JSON dosyasını oluşturur.\n   - `search_file` aracının JSON dosyasına ekleyin.\n   - `send_email` aracının bir e-posta göndermesi için JSON dosyasını kullanır.\n\n3. **Alternatif Bir Çözüm Öner**: Aşağıdaki durum, kullanıcının çalışanların maaşları sıralaması için bir alternatif çözüm sağlar:\n   - `get_salaries` aracının çalışanların maaşlarını JSON dosyasını oluşturur.\n   - `search_file` aracının JSON dosyasına ekleyin.\n   - `send_email` aracının bir e-posta göndermesi için JSON dosyasını kullanır.\n\n4. **JSON Tool Call ÜRETME ve Kullanıcıya Durumu Açıkla**: Bu durum, kullanıcının çalışanların maaşları sıralaması için bir combined çözüm sağlar:\n   - `get_weather` aracının JSON dosyasını oluşturur.\n   - `search_file` aracının JSON dosyasına ekleyin.\n   - `send_email` aracının bir e-posta göndermesi için JSON dosyasını kullanır.\n\n5. **JSON Tool Call ÜRETME ve Alternatif Bir Çözüm Öner**: Bu durum, kullanıcının çalışanların maaşları sıralaması için bir combined çözüm sağlar:\n   - `get_weather` aracının JSON dosyasını oluşturur.\n   - `search_file` aracının JSON dosyasına ekleyin.\n   - `send_email` aracının bir e-posta göndermesi için JSON dosyasını kullanır.\n\n6. **Kullanıcıya Durumu Açıkla ve Alternatif Bir Çözüm Öner**: Bu durum, kullanıcının çalışanların maaşları sıralaması için bir combined çözüm sağlar:\n   - `get_salaries` aracının JSON dosyasını oluşturur.\n   - `search_file` aracının JSON dosyasına ekleyin.\n   - `send_email` aracının bir e-posta göndermesi için JSON dosyasını kullanır.\n\nBu durumlar, kullanıcının çalışanların maaşları sıralaması için çok yaklaşık olarak kullanılabilirler.",
+  "duration_sec": 5.4,
+  "timestamp": "2026-04-28T14:05:11.227681",
+  "expected_focus": [
+    "Tool rejection",
+    "No hallucinated tool",
+    "User communication",
+    "Alternative suggestion"
+  ],
+  "ai_evaluation": {
+    "correctness": "pending",
+    "hallucination": null,
+    "security_aware": null,
+    "completeness": "pending",
+    "idiomatic": null,
+    "notes": "AI evaluation pending."
+  }
+}

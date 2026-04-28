@@ -1,0 +1,22 @@
+{
+  "id": "tools_multi_step",
+  "category": "tools",
+  "prompt": "Kullanıcı: 'Son 3 günün satış raporunu çek ve toplamı email olarak gönder.' Mevcut araçların:\n1. `get_sales(start_date: string, end_date: string) -> list[dict]`\n2. `calculate_sum(items: list[float]) -> float`\n3. `send_email(to: string, subject: string, body: string) -> bool`\n\nBu işlemi tamamlamak için gereken TÜM tool call'ları sırayla üret. Her adımda bir önceki adımın çıktısını nasıl kullanacağını belirt.\n\nFormat (array):\n```json\n[\n  {\"tool\": \"...\", \"parameters\": {...}, \"reason\": \"...\"},\n  ...\n]\n```",
+  "response": "We need to produce a sequence of tool calls. Steps: 1) get_sales with start_date = today - 3 days, end_date = today. 2) calculate_sum on the sales amounts. 3) send_email with total sum.\n\nWe need to output JSON array with each tool call, with reason.\n\nWe need to compute dates: assume today is 2025-08-27? Actually current date is 2025-08-27. So start_date = 2025-08-24, end_date = 2025-08-27.\n\nFirst tool call: get_sales(start_date: \"2025-08-24\", end_date: \"2025-08-27\") -> list[dict] containing sales items.\n\nSecond: calculate_sum(items: [item[\"amount\"] for item in sales]) -> float.\n\nThird: send_email(to: \"user@example.com\", subject: \"Son 3 Günün Satış Raporu\", body: \"Toplam satış: X\",) -> bool.\n\nWe need to include reason.\n\nThus output array with three objects.\n\nLet's produce.\n</think>\n[\n  {\n    \"tool\": \"get_sales\",\n    \"parameters\": {\n      \"start_date\": \"2025-08-24\",\n      \"end_date\": \"2025-08-27\"\n    },\n    \"reason\": \"Çekmek istediğimiz 3 günün satış verilerini almak için start_date ve end_date ayarlanmıştır.\"\n  },\n  {\n    \"tool\": \"calculate_sum\",\n    \"parameters\": {\n      \"items\": \"[item['amount'] for item in get_sales_output]\"\n    },\n    \"reason\": \"Satış verilerinin (item['amount']) değerlerini bir listeye dönüştürüp toplamı hesaplamak için kullanılır.\"\n  },\n  {\n    \"tool\": \"send_email\",\n    \"parameters\": {\n      \"to\": \"user@example.com\",\n      \"subject\": \"Son 3 Günün Satış Raporu\",\n      \"body\": \"Toplam satış: [calculate_sum_output]\"\n    },\n    \"reason\": \"Toplam satış miktarını e‑posta göndermek için kullanılan tool.\"\n  }\n]",
+  "duration_sec": 8.8,
+  "timestamp": "2026-04-28T14:19:35.103220",
+  "expected_focus": [
+    "Multi-step chaining",
+    "Output dependency",
+    "Reasoning",
+    "JSON array schema"
+  ],
+  "ai_evaluation": {
+    "correctness": "pending",
+    "hallucination": null,
+    "security_aware": null,
+    "completeness": "pending",
+    "idiomatic": null,
+    "notes": "AI evaluation pending."
+  }
+}

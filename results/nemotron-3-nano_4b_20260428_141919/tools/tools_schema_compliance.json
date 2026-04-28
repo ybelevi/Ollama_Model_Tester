@@ -1,0 +1,21 @@
+{
+  "id": "tools_schema_compliance",
+  "category": "tools",
+  "prompt": "Aşağıdaki tool call JSON'unu schema'ya uygunluğu açısından incele. Hata varsa bul ve düzelt.\n\nSchema:\n```json\n{\n  \"tool\": \"string\",\n  \"parameters\": {\n    \"city\": \"string\"\n  }\n}\n```\n\nVerilen tool call:\n```json\n{\n  \"tool\": \"get_weather\",\n  \"params\": {\n    \"city\": \"Istanbul\"\n  }\n}\n```\n\nHataları listele ve düzeltilmiş JSON'u yaz.",
+  "response": "We need to compare given tool call JSON to schema. Schema expects tool: string, parameters: city: string. The given call uses \"params\" key, not \"parameters\". Also tool name \"get_weather\" is okay. So need to correct key name to \"parameters\". Also ensure tool name is string. So corrected JSON:\n\n{\n \"tool\": \"get_weather\",\n \"parameters\": {\n   \"city\": \"Istanbul\"\n }\n}\n\nList errors: used \"params\" instead of \"parameters\". Provide list and corrected JSON.\n</think>\n**Hatalıları:**\n\n1. **Parametre adı hatalı:** JSON içinde `\"params\"` olarak tanımlanmış bir alan var, ancak schema’ya göre doğru anahtar `parameters` olmalıdır.  \n2. **Araç adı doğru:** `get_weather` doğru bir arayüz adıdır, bu da düzeltülmeli.\n\n**Düzeltilmiş JSON:**\n\n```json\n{\n  \"tool\": \"get_weather\",\n  \"parameters\": {\n    \"city\": \"Istanbul\"\n  }\n}\n```",
+  "duration_sec": 4.2,
+  "timestamp": "2026-04-28T14:19:49.562995",
+  "expected_focus": [
+    "Schema validation",
+    "Field name mismatch",
+    "JSON correction"
+  ],
+  "ai_evaluation": {
+    "correctness": "pending",
+    "hallucination": null,
+    "security_aware": null,
+    "completeness": "pending",
+    "idiomatic": null,
+    "notes": "AI evaluation pending."
+  }
+}

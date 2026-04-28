@@ -1,0 +1,207 @@
+/* Ollama Model Tester - Global Styles */
+
+:root {
+  --primary: #0d6efd;
+  --success: #198754;
+  --danger: #dc3545;
+  --warning: #ffc107;
+  --info: #0dcaf0;
+  --dark: #212529;
+  --light: #f8f9fa;
+  --gray: #6c757d;
+  --border-radius: 0.5rem;
+  --shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.075);
+  --shadow-lg: 0 1rem 3rem rgba(0,0,0,0.175);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background-color: var(--light);
+  color: var(--dark);
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+}
+
+.navbar-brand {
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.card {
+  border: none;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.card-header {
+  background: transparent;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+  font-weight: 600;
+}
+
+.category-card {
+  cursor: pointer;
+  border: 2px solid transparent;
+}
+
+.category-card.selected {
+  border-color: var(--primary);
+  background-color: rgba(13, 110, 253, 0.04);
+}
+
+.category-icon {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.badge-category {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Progress */
+.progress {
+  height: 1.5rem;
+  border-radius: var(--border-radius);
+  background-color: #e9ecef;
+}
+
+.progress-bar {
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+/* Log window */
+.log-window {
+  background: var(--dark);
+  color: #0f0;
+  font-family: 'Consolas', 'Monaco', monospace;
+  font-size: 0.85rem;
+  padding: 1rem;
+  border-radius: var(--border-radius);
+  max-height: 400px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.log-window .log-time {
+  color: var(--gray);
+  margin-right: 0.5rem;
+}
+
+.log-window .log-ok { color: var(--success); }
+.log-window .log-err { color: var(--danger); }
+.log-window .log-warn { color: var(--warning); }
+
+/* Status indicators */
+.status-indicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 0.5rem;
+}
+
+.status-running { background-color: var(--primary); animation: pulse 1.5s infinite; }
+.status-paused { background-color: var(--warning); }
+.status-completed { background-color: var(--success); }
+.status-error { background-color: var(--danger); }
+
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.4; }
+  100% { opacity: 1; }
+}
+
+/* Comparison table */
+.compare-table th {
+  position: sticky;
+  top: 0;
+  background: var(--light);
+  z-index: 10;
+}
+
+.compare-cell {
+  min-width: 250px;
+  max-width: 400px;
+}
+
+.score-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.score-pass { background: var(--success); color: #fff; }
+.score-fail { background: var(--danger); color: #fff; }
+.score-partial { background: var(--warning); color: var(--dark); }
+
+/* AI Commentary */
+.ai-commentary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  border-radius: var(--border-radius);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.ai-commentary h5 {
+  margin-bottom: 1rem;
+  font-weight: 700;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .category-card { margin-bottom: 1rem; }
+  .compare-cell { min-width: 200px; }
+}
+
+/* Prompt box in tests page */
+.prompt-box {
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: var(--border-radius);
+  padding: 0.75rem;
+  max-height: 200px;
+  overflow-y: auto;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.prompt-box code {
+  font-family: 'Consolas', 'Monaco', monospace;
+  color: #212529;
+}
+
+/* Animations */
+.fade-in {
+  animation: fadeIn 0.4s ease-in;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.spinner-border-sm {
+  width: 1rem;
+  height: 1rem;
+}

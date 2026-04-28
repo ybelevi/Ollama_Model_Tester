@@ -1,0 +1,21 @@
+{
+  "id": "tools_calculator",
+  "category": "tools",
+  "prompt": "Kullanıcı: '12345 çarpı 67890 kaç eder?' Mevcut aracın: `calculate(expression: string) -> float`. SADECE JSON tool call üret. Doğrudan hesaplama yapma, aracı kullan.\n\nFormat:\n```json\n{\n  \"tool\": \"calculate\",\n  \"parameters\": {\n    \"expression\": \"...\"\n  }\n}\n```\n\nEğer tool kullanmıyorsan ve doğrudan cevap veriyorsan, bu bir halüsinasyondur (kendi başına hesaplama yapmaman gerekir).",
+  "response": "```json\n{\n  \"tool\": \"calculate\",\n  \"parameters\": {\n    \"expression\": \"1234567890\"\n  }\n}\n```\n\nBu JSON'yi, `calculate` aracının `expression` parametresini 1234567890 şeklinde yanlışlıkla gösterir. Doğrudan hesaplama yapmaya çalışmak için, bu değerin doğru bir türü olması gerekir.",
+  "duration_sec": 1.0,
+  "timestamp": "2026-04-28T14:04:42.339904",
+  "expected_focus": [
+    "Tool delegation",
+    "No direct calculation",
+    "JSON schema"
+  ],
+  "ai_evaluation": {
+    "correctness": "pending",
+    "hallucination": null,
+    "security_aware": null,
+    "completeness": "pending",
+    "idiomatic": null,
+    "notes": "AI evaluation pending."
+  }
+}

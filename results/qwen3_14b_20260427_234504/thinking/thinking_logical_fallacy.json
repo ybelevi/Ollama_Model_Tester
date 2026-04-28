@@ -1,0 +1,22 @@
+{
+  "id": "thinking_logical_fallacy",
+  "category": "thinking",
+  "prompt": "Aşağıdaki argümandaki mantık hatasını (logical fallacy) tespit et ve nedenini açıkla:\n\n'Herkes yeni vergi yasasını destekliyor. Facebook'ta gördüğüm 100 yorumun 90'ı bunun harika olduğunu söylüyor. Dolayısıyla bu yasa halkın %90'ı tarafından destekleniyor.'\n\nHangi fallacy? Neden geçersiz? Doğru analiz nasıl olmalıydı?",
+  "response": "[TIMEOUT] Model 180 saniye içinde cevap vermedi.",
+  "duration_sec": 181.0,
+  "timestamp": "2026-04-27T23:52:09.386944",
+  "expected_focus": [
+    "Sampling bias",
+    "Hasty generalization",
+    "Selection bias",
+    "Correct methodology"
+  ],
+  "ai_evaluation": {
+    "correctness": "timeout",
+    "hallucination": false,
+    "security_aware": null,
+    "completeness": "timeout",
+    "idiomatic": null,
+    "notes": "Prompt 180 sn timeout'a uğradı."
+  }
+}

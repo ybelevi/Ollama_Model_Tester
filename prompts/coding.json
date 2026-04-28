@@ -1,0 +1,324 @@
+[
+  {
+    "id": "py_lru_cache",
+    "category": "algorithm",
+    "prompt": "Python'da thread-safe bir LRU Cache implemente et. `get`, `put`, `delete` metodları olsun. Time complexity O(1) olmalı. Sadece Python standard kütüphanelerini kullan. Kodun en üstüne kısa bir docstring koy, başka açıklama yazma.",
+    "depends_on": null,
+    "expected_focus": ["OrderedDict veya custom doubly-linked list", "threading.Lock/RLock", "O(1) complexity"]
+  },
+  {
+    "id": "py_race_condition_debug",
+    "category": "debug",
+    "prompt": "Aşağıdaki kodda race condition var. Hatayı açıkla ve düzeltilmiş halini yaz. Sadece kod ve kısa açıklama:\n\n```python\nimport threading\n\nbalance = 0\n\ndef deposit(amount):\n    global balance\n    for _ in range(100000):\n        balance += amount\n\nt1 = threading.Thread(target=deposit, args=(1,))\nt2 = threading.Thread(target=deposit, args=(1,))\nt1.start(); t2.start()\nt1.join(); t2.join()\nprint(balance)\n```",
+    "depends_on": null,
+    "expected_focus": ["Lock/RLock", "global state explanation"]
+  },
+  {
+    "id": "hallucination_numpy_quantum",
+    "category": "hallucination",
+    "prompt": "Python'da numpy kütüphanesinin `array.quantum_entangle(other_array)` metodunu kullanarak iki matrisi birleştiren kısa bir örnek kod yaz. Eğer böyle bir metod yoksa, alternatif gerçek bir yöntemle aynı mantıksal işlevi gerçekleştir ve neden olmadığını belirt.",
+    "depends_on": null,
+    "expected_focus": ["Uydurma mi yapıyor", "Gercek yontemi mi gosteriyor"]
+  },
+  {
+    "id": "hallucination_react_quantum_hook",
+    "category": "hallucination",
+    "prompt": "React 19'da `useQuantumState` hook'u ile kuantum süperpozisyon mantığında bir sayaç (counter) componenti yaz. Eğer böyle bir hook yoksa, modern React ile aynı davranışı simüle et ve hook'un var olmadığını belirt.",
+    "depends_on": null,
+    "expected_focus": ["useState/useReducer", "Uydurma hook kullanimi"]
+  },
+  {
+    "id": "c_code_review_long",
+    "category": "code_review",
+    "prompt": "Aşağıdaki C kodunu memory leak, buffer overflow, null pointer dereference, use-after-free ve undefined behavior açısından incele. Her bulduğun hatayı satır numarasıyla birlikte listele ve düzeltilmiş kodu yaz:\n\n```c\n#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\n\nchar* get_username() {\n    char buf[32];\n    printf(\"Enter name: \");\n    gets(buf);\n    char* name = (char*)malloc(strlen(buf));\n    strcpy(name, buf);\n    return name;\n}\n\nvoid process_data(int* data, int len) {\n    int* temp = data;\n    for(int i=0; i<=len; i++) {\n        temp[i] += 10;\n    }\n    free(temp);\n}\n\nvoid handle_message(const char* msg) {\n    char local[64];\n    strncpy(local, msg, sizeof(local));\n    printf(\"Message: %s\", local);\n}\n\nint main() {\n    char* user = get_username();\n    printf(\"User: %s\\n\", user);\n    \n    int values[] = {1,2,3};\n    process_data(values, 3);\n    \n    char* big = (char*)malloc(16);\n    strcpy(big, \"this is a very long string indeed\");\n    free(big);\n    free(big);\n    \n    char* dangling = user;\n    free(user);\n    printf(\"After free: %s\\n\", dangling);\n    \n    return 0;\n}\n```",
+    "depends_on": null,
+    "expected_focus": ["gets", "off-by-one", "double free", "use-after-free", "strncpy null termination", "malloc(strlen) vs strlen+1"]
+  },
+  {
+    "id": "fastapi_crud_docker",
+    "category": "architecture",
+    "prompt": "Bir FastAPI projesi için tam bir klasör yapısı ve dosya içerikleri oluştur. SQLAlchemy async kullan, PostgreSQL'e bağlansın. Dockerfile (multi-stage), docker-compose.yml, requirements.txt ve basit bir CRUD endpoint'i (Item modeli) dahil et. Sadece dosya adları ve içerikleri olacak şekilde markdown code block olarak ver.",
+    "depends_on": null,
+    "expected_focus": ["Multi-stage Dockerfile", "async SQLAlchemy", "docker-compose"]
+  },
+  {
+    "id": "regex_engine_py",
+    "category": "algorithm",
+    "prompt": "Python'da regex kullanmadan basit bir regex matcher yaz. Desteklemesi gerekenler: `.` (herhangi bir karakter) ve `*` (0 veya daha fazla tekrar). Fonksiyon imzasi: `def is_match(text: str, pattern: str) -> bool`. Recursive veya DP cozum kabul edilir. Sadece kod.",
+    "depends_on": null,
+    "expected_focus": ["Recursion/DP", "Correct star behavior", "Edge cases"]
+  },
+  {
+    "id": "json_parser_c",
+    "category": "algorithm",
+    "prompt": "C dilinde recursive descent yaklaşımıyla basit bir JSON parser yaz. Sadece object, string, number, true, false, null desteklesin. Ana fonksiyon: `Value* parse_json(const char* input)`. Sadece kod ve minimal struct tanımları.",
+    "depends_on": null,
+    "expected_focus": ["Recursive descent", "Memory allocation", "Enum/Union for Value type"]
+  },
+  {
+    "id": "sql_injection_fix",
+    "category": "security",
+    "prompt": "Aşağıdaki Python/Flask kodunda SQL Injection açığı var. Düzelt ve nedenini açıkla:\n\n```python\nfrom flask import Flask, request\nimport sqlite3\napp = Flask(__name__)\n\n@app.route(\"/user\")\ndef get_user():\n    user_id = request.args.get(\"id\")\n    conn = sqlite3.connect(\"app.db\")\n    cursor = conn.cursor()\n    cursor.execute(\"SELECT * FROM users WHERE id = \" + user_id)\n    return str(cursor.fetchall())\n```",
+    "depends_on": null,
+    "expected_focus": ["Parameterized queries", "Input validation"]
+  },
+  {
+    "id": "go_worker_pool",
+    "category": "concurrency",
+    "prompt": "Go dilinde thread-safe bir Worker Pool implemente et. Gorevleri bir kanaldan alıp, belirli sayıda worker işlesin. WaitGroup ile tüm işlemlerin bitmesini bekle. Graceful shutdown desteklesin. Sadece kod.",
+    "depends_on": null,
+    "expected_focus": ["channels", "sync.WaitGroup", "context.Context for shutdown"]
+  },
+  {
+    "id": "rust_lifetime_fix",
+    "category": "debug",
+    "prompt": "Aşağıdaki Rust kodu compile etmiyor. Lifetime hatasını düzelt ve nedenini açıkla:\n\n```rust\nfn longest(x: &str, y: &str) -> &str {\n    if x.len() > y.len() { x } else { y }\n}\n\nfn main() {\n    let s1 = String::from(\"long\");\n    let result;\n    {\n        let s2 = String::from(\"short\");\n        result = longest(s1.as_str(), s2.as_str());\n    }\n    println!(\"The longest string is {}\", result);\n}\n```",
+    "depends_on": null,
+    "expected_focus": ["Explicit lifetime annotations", "'a"]
+  },
+  {
+    "id": "observer_pattern_ts",
+    "category": "design_pattern",
+    "prompt": "TypeScript'te Observer (Pub-Sub) pattern implemente et. Bir EventEmitter class olsun: `on`, `off`, `emit` metodları çalışsın. Tip güvenliği (generics) kullan. Sadece kod.",
+    "depends_on": null,
+    "expected_focus": ["Generics", "Map/Set for listeners", "Type safety"]
+  },
+  {
+    "id": "cli_tool_python",
+    "category": "architecture",
+    "prompt": "Python `argparse` ile profesyonel bir CLI aracı yaz. Subcommand'lar (`init`, `build`, `deploy`) olsun. Her subcommand'in kendi argümanları olsun. `--verbose` ve `--config` global flag'leri olsun. Ana dosya `main.py`. Sadece kod.",
+    "depends_on": null,
+    "expected_focus": ["subparsers", "type validation", "entry point guard"]
+  },
+  {
+    "id": "custom_context_manager",
+    "category": "language_feature",
+    "prompt": "Python'da kendi context manager'ını yaz. Bir `DatabaseConnection` class'ı olsun. `__enter__` bağlantıyı açsın, `__exit__` exception durumunda rollback, başarılıysa commit yapsın. `contextlib.contextmanager` kullanma. Sadece kod.",
+    "depends_on": null,
+    "expected_focus": ["__enter__/__exit__ signature", "exception handling in __exit__"]
+  },
+  {
+    "id": "async_producer_consumer",
+    "category": "concurrency",
+    "prompt": "Python `asyncio` ile producer-consumer pattern implemente et. 2 producer, 3 consumer olsun. Queue maxsize=10 olsun. Consumer'lar `None` alınca bitsin. Graceful shutdown olsun. Sadece kod.",
+    "depends_on": null,
+    "expected_focus": ["asyncio.Queue", "async/await", "poison pill pattern"]
+  },
+  {
+    "id": "binary_search_overflow_bug",
+    "category": "debug",
+    "prompt": "Aşağıdaki C binary search implementasyonunda klasik bir integer overflow bug'ı var. Bul ve düzelt:\n\n```c\nint binary_search(int arr[], int n, int target) {\n    int left = 0;\n    int right = n - 1;\n    while (left <= right) {\n        int mid = (left + right) / 2;\n        if (arr[mid] == target) return mid;\n        if (arr[mid] < target) left = mid + 1;\n        else right = mid - 1;\n    }\n    return -1;\n}\n```",
+    "depends_on": null,
+    "expected_focus": ["(left + right) / 2 overflow", "left + (right-left)/2"]
+  },
+  {
+    "id": "hallucination_git_quantum",
+    "category": "hallucination",
+    "prompt": "Git'te `git merge --quantum` flag'ini kullanarak iki branch arasındaki çakışmaları kuantum süperpozisyonunda çözen bir bash scripti yaz. Eğer böyle bir flag yoksa, gerçekte çakışma çözümü için kullanılan standart bir workflow yaz ve flag'in uydurma olduğunu belirt.",
+    "depends_on": null,
+    "expected_focus": ["Uydurma flag", "Gercek merge workflow"]
+  },
+  {
+    "id": "dockerfile_optimize",
+    "category": "devops",
+    "prompt": "Aşağıdaki Dockerfile'ı optimize et. Multi-stage build kullan, image boyutunu küçült, cache layering'i iyileştir. Düzeltilmiş Dockerfile'ı yaz ve neleri değiştirdiğini maddelerle açıkla:\n\n```dockerfile\nFROM python:3.11\nCOPY . /app\nWORKDIR /app\nRUN pip install -r requirements.txt\nCMD [\"python\", \"app.py\"]\n```",
+    "depends_on": null,
+    "expected_focus": ["Multi-stage", "slim/alpine", "COPY requirements first"]
+  },
+  {
+    "id": "solid_principles_refactor",
+    "category": "design",
+    "prompt": "Aşağıdaki Python kodunda hangi SOLID prensipleri ihlal ediliyor? Her ihlali belirt ve refactor edilmiş halini yaz:\n\n```python\nclass Employee:\n    def __init__(self, name, salary):\n        self.name = name\n        self.salary = salary\n    def calculate_pay(self):\n        return self.salary * 1.2\n    def save_to_database(self):\n        print(f\"Saving {self.name}\")\n    def generate_report(self):\n        return f\"Report for {self.name}\"\n\nclass Robot(Employee):\n    def __init__(self, name):\n        super().__init__(name, 0)\n    def calculate_pay(self):\n        raise Exception(\"Robots dont get paid\")\n```",
+    "depends_on": null,
+    "expected_focus": ["SRP", "LSP", "Dependency Inversion"]
+  },
+  {
+    "id": "trapping_rain_water",
+    "category": "algorithm",
+    "prompt": "'Trapping Rain Water' algoritmasını Python'da çöz. Time complexity O(n), space complexity O(1) olmalı. Fonksiyon imzasi: `def trap(height: list[int]) -> int:`. Sadece kod ve 2 satırlık açıklama.",
+    "depends_on": null,
+    "expected_focus": ["Two pointers", "O(1) space", "O(n) time"]
+  },
+  {
+    "id": "api_gateway_rate_limiter",
+    "category": "system_design",
+    "prompt": "Bir API Gateway için Rate Limiter pseudo-code'u yaz. Token Bucket algoritmasını kullan. Redis kullanmadan, thread-safe in-memory yap. Python benzeri syntax kabul edilir. Sadece kod.",
+    "depends_on": null,
+    "expected_focus": ["Token bucket", "thread-safe", "atomic operations/locking"]
+  },
+  {
+    "id": "cpp_smart_pointer_fix",
+    "category": "debug",
+    "prompt": "Aşağıdaki C++ kodunda memory management hatası var. Düzelt ve açıkla:\n\n```cpp\n#include <iostream>\n\nclass Resource {\n    int* data;\npublic:\n    Resource() { data = new int[100]; }\n    ~Resource() { delete data; }\n    Resource(const Resource& other) {\n        data = other.data;\n    }\n};\n\nint main() {\n    Resource r1;\n    Resource r2 = r1;\n    return 0;\n}\n```",
+    "depends_on": null,
+    "expected_focus": ["Rule of Three/Zero", "deep copy", "delete[] vs delete"]
+  },
+  {
+    "id": "di_container_csharp",
+    "category": "design_pattern",
+    "prompt": "C#'ta basit bir Dependency Injection Container yaz. `Register<TInterface, TImplementation>()` ve `Resolve<TInterface>()` metodları olsun. Constructor injection desteklesin. Sadece kod.",
+    "depends_on": null,
+    "expected_focus": ["Reflection/Activator", "Dictionary storage", "Recursive resolution"]
+  },
+  {
+    "id": "state_machine_email_validator",
+    "category": "algorithm",
+    "prompt": "Regex kullanmadan, sonlu durum makinesi (Finite State Machine) ile basit bir email validator yaz. `@` ve `.` kontrolü yapsın, boşluk ve geçersiz karakterleri reddetsin. Python. Sadece kod.",
+    "depends_on": null,
+    "expected_focus": ["State transitions", "No regex", "Edge cases like 'a@b.c'"]
+  },
+  {
+    "id": "pickle_security_fix",
+    "category": "security",
+    "prompt": "Aşağıdaki Python kodunda güvenlik açığı var. `pickle.loads` kullanımı tehlikelidir. Düzelt ve alternatif güvenli serialization yöntemini uygula:\n\n```python\nimport pickle\nimport socket\n\ndef handle_client(conn):\n    data = conn.recv(4096)\n    obj = pickle.loads(data)\n    process(obj)\n```",
+    "depends_on": null,
+    "expected_focus": ["json", "msgpack", "protobuf", "never unpickle untrusted data"]
+  },
+  {
+    "id": "hallucination_pandas_s3",
+    "category": "hallucination",
+    "prompt": "Python'da pandas DataFrame'i doğrudan S3'e yükleyen `df.upload_to_s3(bucket, key)` metodunu kullanan bir kod yaz. Eğer pandas'ta böyle bir metod yoksa, gerçekte kullanılan `boto3` veya `s3fs` yaklaşımını göster ve metodun uydurma olduğunu belirt.",
+    "depends_on": null,
+    "expected_focus": ["Uydurma metod", "boto3/s3fs kullanimi"]
+  },
+  {
+    "id": "diff_algorithm_simple",
+    "category": "algorithm",
+    "prompt": "İki string arasındaki farkı bulan basit bir diff algoritması yaz. Longest Common Subsequence (LCS) tabanlı olsun. `diff(old: str, new: str) -> list[tuple[str, str]]` şeklinde `('+', 'eklenen')` ve `('-', 'silinen')` döndürsün. Python. Sadece kod.",
+    "depends_on": null,
+    "expected_focus": ["LCS/DP", "Unified diff style output"]
+  },
+  {
+    "id": "java_concurrent_hashmap_fix",
+    "category": "debug",
+    "prompt": "Aşağıdaki Java kodunda `ConcurrentHashMap` yanlış kullanımı var. Race condition oluşuyor. Bul ve düzelt:\n\n```java\nimport java.util.concurrent.*;\n\npublic class Counter {\n    private ConcurrentHashMap<String, Integer> map = new ConcurrentHashMap<>();\n    public void increment(String key) {\n        map.put(key, map.getOrDefault(key, 0) + 1);\n    }\n}\n```",
+    "depends_on": null,
+    "expected_focus": ["compute/computeIfPresent", "atomic compound action"]
+  },
+  {
+    "id": "crypto_hashlib_fix",
+    "category": "security",
+    "prompt": "Aşağıdaki Python kodunda şifreleme (cryptography) hatası var. MD5 ve plain text comparison kullanılıyor. Düzelt ve modern best-practice'i uygula:\n\n```python\nimport hashlib\n\ndef check_password(password, stored_hash):\n    return hashlib.md5(password.encode()).hexdigest() == stored_hash\n```",
+    "depends_on": null,
+    "expected_focus": ["bcrypt", "argon2", "scrypt", "salt", "slow hash"]
+  },
+  {
+    "id": "html_parser_tokenizer",
+    "category": "algorithm",
+    "prompt": "Regex kullanmadan basit bir HTML tokenizer yaz. `<tag>`, `</tag>`, text, attribute'ları ayırsın. Sadece token listesi döndürsün, DOM tree oluşturmasın. Python. Sadece kod.",
+    "depends_on": null,
+    "expected_focus": ["State machine", "String parsing", "No regex"]
+  },
+  {
+    "id": "dijkstra_algorithm_py",
+    "category": "algorithm",
+    "prompt": "Dijkstra algoritması ile en kısa yolu bulan Python kodu yaz. Input: `graph: dict[str, dict[str, int]]`, `start: str`. Output: `distances: dict[str, int]`. `heapq` kullan. Negatif ağırlıklı kenar olursa ne olacağını kısaca belirt. Sadece kod.",
+    "depends_on": null,
+    "expected_focus": ["heapq", "relaxation", "negative edge handling note"]
+  },
+  {
+    "id": "llm_client_resilient_py",
+    "category": "architecture",
+    "prompt": "Bir LLM API istemcisi yaz. Retry mekanizması (exponential backoff), timeout, circuit breaker pattern ve rate limiting olsun. Python `httpx` veya `requests` benzeri. Sadece kod.",
+    "depends_on": null,
+    "expected_focus": ["Exponential backoff", "Circuit breaker state machine", "Timeout handling"]
+  },
+  {
+    "id": "followup_lru_persistence",
+    "category": "followup",
+    "prompt": "Yukarıdaki LRU Cache implementasyonuna disk persistence özelliği ekle. SQLite kullan, thread-safety'yi bozma. Sadece değişiklikleri ve ilgili kodu yaz.",
+    "depends_on": "py_lru_cache",
+    "expected_focus": ["sqlite3", "Thread safety preserved", "Minimal changes"]
+  },
+  {
+    "id": "followup_lru_tests",
+    "category": "followup",
+    "prompt": "Yukarıdaki LRU Cache implementasyonu için comprehensive `pytest` unit testleri yaz. Thread-safety testi de dahil olsun. Edge case'ler: boş cache, kapasite=1, concurrent access. Sadece test kodu.",
+    "depends_on": "py_lru_cache",
+    "expected_focus": ["pytest", "threading.Thread concurrent test", "Edge cases"]
+  },
+  {
+    "id": "followup_fastapi_tests",
+    "category": "followup",
+    "prompt": "Yukarıdaki FastAPI CRUD projesi için `pytest` + `httpx` async testleri yaz. Database dependency'i override et (mock/in-memory). Create, Read, Update, Delete endpoint'lerini kapsa.",
+    "depends_on": "fastapi_crud_docker",
+    "expected_focus": ["AsyncClient", "Dependency override", "CRUD coverage"]
+  },
+  {
+    "id": "followup_c_fixes",
+    "category": "followup",
+    "prompt": "Yukarıdaki C kodu incelemesinde bulduğun hataların TAMAMINI düzelterek, tamamen güvenli ve modern C standardına uygun (C11) tek bir refactored kod dosyası yaz. `errno` ve `size_t` kullanımına dikkat et.",
+    "depends_on": "c_code_review_long",
+    "expected_focus": ["Modern C", "All previous bugs fixed", "errno handling"]
+  },
+  {
+    "id": "ts_type_safety_strict",
+    "category": "type_system",
+    "prompt": "Aşağıdaki TypeScript kodunda her yerde `any` kullanılmış. Strict mode'a (`strict: true`) uygun hale getir. Unknown, generic constraint, discriminated union ve null safety kullan. Sadece düzeltilmiş kodu yaz:\n\n```typescript\nfunction processData(data: any): any {\n    return data.map(item => item.value * 2);\n}\n\ninterface ApiResponse {\n    status: any;\n    payload: any;\n}\n\nfunction handleResponse(res: ApiResponse): any {\n    if (res.status === 200) {\n        return res.payload.data;\n    } else {\n        return null;\n    }\n}\n```",
+    "depends_on": null,
+    "expected_focus": ["unknown instead of any", "generic constraints", "discriminated unions", "null safety"]
+  },
+  {
+    "id": "pytest_mock_integration",
+    "category": "testing",
+    "prompt": "Aşağıdaki payment gateway kodu için comprehensive `pytest` unit testleri yaz. Mock / patch kullanarak harici HTTP çağrılarını izole et. Fixture, parametrized test ve exception case'lerini kapsa. Sadece test kodu:\n\n```python\nimport requests\n\nclass PaymentGateway:\n    def __init__(self, api_key: str):\n        self.api_key = api_key\n        self.base_url = \"https://api.payment.com/v1\"\n\n    def charge(self, amount: float, card_token: str) -> dict:\n        resp = requests.post(\n            f\"{self.base_url}/charges\",\n            headers={\"Authorization\": f\"Bearer {self.api_key}\"},\n            json={\"amount\": amount, \"card_token\": card_token}\n        )\n        resp.raise_for_status()\n        return resp.json()\n\n    def refund(self, charge_id: str) -> dict:\n        resp = requests.post(\n            f\"{self.base_url}/charges/{charge_id}/refund\",\n            headers={\"Authorization\": f\"Bearer {self.api_key}\"}\n        )\n        resp.raise_for_status()\n        return resp.json()\n```",
+    "depends_on": null,
+    "expected_focus": ["pytest fixture", "unittest.mock.patch", "parametrized tests", "HTTPError simulation"]
+  },
+  {
+    "id": "sql_n_plus_one_fix",
+    "category": "database",
+    "prompt": "Aşağıdaki SQLAlchemy (v2 async) kodunda klasik N+1 sorgu problemi var. Bul, açıkla ve düzelt. `selectinload` veya `joinedload` kullan. Sadece düzeltilmiş kod ve kısa açıklama:\n\n```python\nfrom sqlalchemy.ext.asyncio import AsyncSession\nfrom sqlalchemy import select\n\nclass Order(Base):\n    __tablename__ = 'orders'\n    id = Column(Integer, primary_key=True)\n    user_id = Column(Integer, ForeignKey('users.id'))\n    items = relationship(\"OrderItem\", back_populates=\"order\")\n\nclass OrderItem(Base):\n    __tablename__ = 'order_items'\n    id = Column(Integer, primary_key=True)\n    order_id = Column(Integer, ForeignKey('orders.id'))\n    product_name = Column(String)\n\nasync def get_orders_with_items(db: AsyncSession):\n    result = await db.execute(select(Order))\n    orders = result.scalars().all()\n    for order in orders:\n        for item in order.items:\n            print(item.product_name)\n```",
+    "depends_on": null,
+    "expected_focus": ["N+1 detection", "selectinload/joinedload", "async eager loading"]
+  },
+  {
+    "id": "js_callbackhell_to_async",
+    "category": "refactoring",
+    "prompt": "Aşağıdaki JavaScript kodu callback hell içeriyor. Modern async/await + proper error handling (try/catch chain) ile refactor et. Ayrıca retry logic (max 3 deneme) ekle. Sadece düzeltilmiş kod:\n\n```javascript\nfunction authenticateUser(username, password, callback) {\n    db.findUser(username, function(err, user) {\n        if (err) return callback(err);\n        if (!user) return callback(new Error('User not found'));\n        bcrypt.compare(password, user.hash, function(err, valid) {\n            if (err) return callback(err);\n            if (!valid) return callback(new Error('Invalid password'));\n            jwt.sign({id: user.id}, SECRET, function(err, token) {\n                if (err) return callback(err);\n                audit.log('login', user.id, function(err) {\n                    if (err) return callback(err);\n                    callback(null, token);\n                });\n            });\n        });\n    });\n}\n```",
+    "depends_on": null,
+    "expected_focus": ["async/await", "try/catch", "retry logic", "flat code structure"]
+  },
+  {
+    "id": "grpc_protobuf_design",
+    "category": "architecture",
+    "prompt": "Bir User Service için `.proto` dosyası (protobuf v3) yaz ve Python gRPC server + client kodunu oluştur. CRUD operasyonları olsun: CreateUser, GetUser, UpdateUser, DeleteUser. Sadece `.proto`, server stub'ı ve client çağrı örneği. Streaming kullanma.",
+    "depends_on": null,
+    "expected_focus": ["proto3 syntax", "grpc server", "grpc client stub", "status codes"]
+  },
+  {
+    "id": "go_error_handling_edge_cases",
+    "category": "error_handling",
+    "prompt": "Aşağıdaki Go kodunda error handling ve edge case eksiklikleri var. Düzelt: context timeout, nil pointer check, partial write, resource cleanup (defer), ve custom error wrapping. Sadece düzeltilmiş kod:\n\n```go\npackage main\n\nimport (\n    \"net/http\"\n    \"os\"\n)\n\nfunc processFile(path string) error {\n    f, _ := os.Open(path)\n    buf := make([]byte, 1024)\n    n, _ := f.Read(buf)\n    resp, _ := http.Post(\"http://api.example.com/upload\", \"application/octet-stream\", nil)\n    resp.Body.Close()\n    return nil\n}\n```",
+    "depends_on": null,
+    "expected_focus": ["error wrapping", "defer cleanup", "nil checks", "context timeout"]
+  },
+  {
+    "id": "cross_language_decorator_ts",
+    "category": "cross_language",
+    "prompt": "Aşağıdaki Python decorator'ünü TypeScript'e çevir. Tip güvenliği korusun, generic olsun, runtime metadata'yi koru. Python versiyonu runtime caching ve logging yapıyor. TypeScript equivalent'i `Reflect` metadata API kullanabilir. Sadece TypeScript kodu:\n\n```python\nfrom functools import wraps\nfrom typing import Callable, Any\nimport time\nimport logging\n\ndef timed_and_cached(maxsize: int = 128):\n    cache = {}\n    def decorator(func: Callable) -> Callable:\n        @wraps(func)\n        def wrapper(*args, **kwargs):\n            key = (args, tuple(kwargs.items()))\n            if key in cache:\n                return cache[key]\n            start = time.time()\n            result = func(*args, **kwargs)\n            elapsed = time.time() - start\n            logging.info(f\"{func.__name__} took {elapsed:.3f}s\")\n            if len(cache) < maxsize:\n                cache[key] = result\n            return result\n        return wrapper\n    return decorator\n```",
+    "depends_on": null,
+    "expected_focus": ["TypeScript generics", "Reflect.metadata", "Map for cache", "decorator factory"]
+  },
+  {
+    "id": "binary_protocol_parser",
+    "category": "binary_protocol",
+    "prompt": "Python'da basit bir TLV (Type-Length-Value) binary protocol parser yaz. Input: `bytes`. Output: parsed `list[dict]`. Big-endian, type=1 byte (unsigned), length=2 bytes (unsigned), value=length bytes. Eğer data eksik veya bozuksa `ValueError` raise et. Sadece kod.",
+    "depends_on": null,
+    "expected_focus": ["struct.unpack", "big-endian", "boundary checks", "ValueError on corruption"]
+  },
+  {
+    "id": "github_actions_workflow",
+    "category": "devops",
+    "prompt": "Bir Python projesi için GitHub Actions workflow dosyası (`.github/workflows/ci.yml`) yaz. Matrix strategy ile Python 3.10/3.11/3.12 test etsin. Lint (ruff), type check (mypy), test (pytest) ve coverage (codecov) adımları olsun. Cache pip dependencies. Sadece YAML.",
+    "depends_on": null,
+    "expected_focus": ["matrix strategy", "pip cache", "pytest + coverage", "ruff + mypy"]
+  },
+  {
+    "id": "performance_bottleneck_profile",
+    "category": "performance",
+    "prompt": "Aşağıdaki Python kodunda performans bottleneck'i var. Big-O analizi yapma, pratik profiling yaklaşımıyla (cProfile / line_profiler mantığıyla) hangi satırın yavaş olduğunu bul ve optimize et. Neden yavaş olduğunu açıkla ve düzeltilmiş kodu yaz:\n\n```python\ndef find_duplicates(data: list[int]) -> list[int]:\n    duplicates = []\n    for i in range(len(data)):\n        for j in range(i + 1, len(data)):\n            if data[i] == data[j] and data[i] not in duplicates:\n                duplicates.append(data[i])\n    return duplicates\n\n# Test: 100.000 elemanlı liste, çoğu unique, ~100 duplicate var\n```",
+    "depends_on": null,
+    "expected_focus": ["O(n^2) -> O(n)", "set/dict usage", "membership check cost", "practical profiling insight"]
+  }
+]

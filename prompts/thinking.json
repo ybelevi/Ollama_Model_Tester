@@ -1,0 +1,44 @@
+[
+  {
+    "id": "thinking_monty_hall",
+    "category": "thinking",
+    "prompt": "Monty Hall problemini adım adım analiz et:\n\n1. 3 kapı var (A, B, C). Birinin arkasında araba, diğer ikisinin arkasında keçi.\n2. Yarışmacı A kapısını seçiyor.\n3. Sunucu (Monty), B veya C kapılarından birini açıyor ve keçi olduğunu gösteriyor.\n4. Yarışmacıya 'Seçimini değiştirmek ister misin?' diye soruluyor.\n\nSeçimi değiştirmek yarışmacı için avantajlı mı? Her adımdaki olasılıkları hesapla. Cevabını olasılık teorisine dayandır. 'Şans işi' deme, matematiksel ispat istiyorum.",
+    "depends_on": null,
+    "expected_focus": ["Conditional probability", "Bayes theorem", "Step-by-step reasoning", "Numerical proof"]
+  },
+  {
+    "id": "thinking_logical_fallacy",
+    "category": "thinking",
+    "prompt": "Aşağıdaki argümandaki mantık hatasını (logical fallacy) tespit et ve nedenini açıkla:\n\n'Herkes yeni vergi yasasını destekliyor. Facebook'ta gördüğüm 100 yorumun 90'ı bunun harika olduğunu söylüyor. Dolayısıyla bu yasa halkın %90'ı tarafından destekleniyor.'\n\nHangi fallacy? Neden geçersiz? Doğru analiz nasıl olmalıydı?",
+    "depends_on": null,
+    "expected_focus": ["Sampling bias", "Hasty generalization", "Selection bias", "Correct methodology"]
+  },
+  {
+    "id": "thinking_constraint_optimization",
+    "category": "thinking",
+    "prompt": "Sınırlı kaynaklarla optimal çözüm üret:\n\nBir kurye şirketi var. 3 paket teslim edilecek:\n- Paket A: 2kg, 50 TL kazanç, 30 dk süre\n- Paket B: 5kg, 120 TL kazanç, 60 dk süre\n- Paket C: 3kg, 80 TL kazanç, 45 dk süre\n\nKısıtlar:\n- Kuryenin çantası max 6kg taşıyabilir.\n- Toplam teslimat süresi max 90 dk olmalı.\n\nHangi paketleri seçmeli ki MAKSİMUM kazanç elde edilsin? Adım adım düşün, brute force yerine mantıksal eleme yap.",
+    "depends_on": null,
+    "expected_focus": ["Constraint analysis", "Knapsack reasoning", "Logical elimination", "Optimal solution proof"]
+  },
+  {
+    "id": "thinking_code_trace",
+    "category": "thinking",
+    "prompt": "Aşağıdaki recursive kodun execution trace'ini adım adım takip et. Her fonksiyon çağrısındaki stack durumunu ve değişken değerlerini yaz. Final sonucu nedir?\n\n```python\ndef mystery(n, acc=1):\n    if n <= 1:\n        return acc\n    return mystery(n - 1, acc * n) + mystery(n - 2, acc * (n - 1))\n\nprint(mystery(4))\n```\n\nSadece cevap verme. Adım adım stack trace'i göster.",
+    "depends_on": null,
+    "expected_focus": ["Recursive trace", "Stack state", "Accumulator tracking", "Step-by-step"]
+  },
+  {
+    "id": "thinking_requirement_conflict",
+    "category": "thinking",
+    "prompt": "İki çelişen requirement analiz et:\n\nReq 1: 'Sistem, kullanıcı şifrelerini asla plaintext olarak saklamamalı. Şifre unutulursa reset atılmalı, eski şifre gösterilememeli.'\nReq 2: 'Sistem yöneticisi, herhangi bir kullanıcının şifresini görüntüleyebilmeli. Güvenlik denetimleri için bu zorunlu.'\n\nBu iki gereksinim çelişiyor mu? Çözüm önerilerini trade-off'larıyla birlikte sun. 'Birini seç' deme, teknik olarak nasıl uzlaştırılacağını anlat.",
+    "depends_on": null,
+    "expected_focus": ["Conflict identification", "Technical trade-offs", "Zero-knowledge alternatives", "Audit logging solution"]
+  },
+  {
+    "id": "thinking_security_threat_model",
+    "category": "thinking",
+    "prompt": "Aşağıdaki basit mimari için STRIDE framework'ü kullanarak threat modelleme yap:\n\nMimari:\n- React frontend (auth JWT ile)\n- Node.js API Gateway\n- PostgreSQL database\n- Redis cache (session storage)\n- 3rd party payment API (HTTPS)\n\nHer STRIDE kategorisi (Spoofing, Tampering, Repudiation, Info Disclosure, DoS, Elevation) için en az bir tehdit belirle ve mitigasyon öner. 'Genel güvenlik tavsiyesi' verme, mimariye özgü tehditler istiyorum.",
+    "depends_on": null,
+    "expected_focus": ["STRIDE coverage", "Architecture-specific threats", "Practical mitigations", "JWT/Redis/3rd party analysis"]
+  }
+]

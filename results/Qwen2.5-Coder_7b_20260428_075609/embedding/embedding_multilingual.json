@@ -1,0 +1,21 @@
+{
+  "id": "embedding_multilingual",
+  "category": "embedding",
+  "prompt": "Cross-lingual anlam eşleştirme: Aşağıdaki İngilizce cümlelerle Türkçe cümlelerin anlamsal eşleşmelerini yap.\n\nİngilizce:\n1. 'The database connection failed due to timeout.'\n2. 'Please review the payment invoice before proceeding.'\n3. 'User authentication requires a valid JWT token.'\n\nTürkçe:\nA. 'Veritabanı bağlantısı zaman aşımından dolayı başarısız oldu.'\nB. 'Kullanıcı doğrulaması için geçerli bir JWT tokeni gereklidir.'\nC. 'Devam etmeden önce ödeme faturasını gözden geçirin.'\nD. 'Sistem bakımı planlanan zamanda başlayacaktır.'\n\nDoğru eşleşmeleri (1-A, 2-B vb.) yap ve nedenini açıkla. Anlam eşleşmesi önemli, kelime-for-kelime çeviri değil.",
+  "response": "İngilizce cümlelerle Türkçe cümlelerin anlamsal eşleşmeleri şu şekildedir:\n\n1- A: 'Veritabanı bağlantısı zaman aşımından dolayı başarısız oldu.'\n2- C: 'Kullanıcı doğrulaması için geçerli bir JWT tokeni gereklidir.'\n3- B: 'Devam etmeden önce ödeme faturasını gözden geçirin.'\n\nAçıklama:\n\n1. İngilizce cümle \"The database connection failed due to timeout.\" Türkçe cümlede \"Veritabanı bağlantısı zaman aşımından dolayı başarısız oldu.\" olarak çevrilmiştir. Bu cümle, veritabanına bağlanmak için belirlenen süre boyunca beklediğimiz ancak bağlantı sağlanmadığı durumu ifade ediyor.\n\n2. İngilizce cümle \"Please review the payment invoice before proceeding.\" Türkçe cümlede \"Devam etmeden önce ödeme faturasını gözden geçirin.\" olarak çevrilmiştir. Bu cümle, bir işlemi tamamlamadan önce ödeme faturasının doğru olduğundan emin olmak için onu incelemesini istiyor.\n\n3. İngilizce cümle \"User authentication requires a valid JWT token.\" Türkçe cümlede \"Kullanıcı doğrulaması için geçerli bir JWT tokeni gereklidir.\" olarak çevrilmiştir. Bu cümle, kullanıcıların sisteme giriş yapabilmek için geçerli bir JSON Web Token (JWT) gerektirdiğini belirtiyor.\n\nBu eşleşmelerde, her iki dili de kullanılan kelimelerin anlamları benzer olduğu ve cümlelerin genel anlamları aynı olduğu gözlemlenmektedir.",
+  "duration_sec": 9.8,
+  "timestamp": "2026-04-28T07:57:14.421686",
+  "expected_focus": [
+    "Cross-lingual semantic match",
+    "Meaning over translation",
+    "Technical term alignment"
+  ],
+  "ai_evaluation": {
+    "correctness": "pending",
+    "hallucination": null,
+    "security_aware": null,
+    "completeness": "pending",
+    "idiomatic": null,
+    "notes": "AI evaluation pending."
+  }
+}

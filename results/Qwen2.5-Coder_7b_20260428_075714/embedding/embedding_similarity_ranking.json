@@ -1,0 +1,21 @@
+{
+  "id": "embedding_similarity_ranking",
+  "category": "embedding",
+  "prompt": "Aşağıdaki 5 cümleyi, 'Araba bakımı yapmak istiyorum' referans cümlesine olan anlamsal benzerliğe göre sırala (1=en benzer, 5=en uzak). Sadece kelime eşleşmesine bakma, anlama bak.\n\nCümleler:\nA. 'Araç servis randevusu almak için bayiliğimizi arayın.'\nB. 'Yeni bir otomobil almayı düşünüyorum.'\nC. 'Motor yağı değişimi her 10.000 km'de bir yapılmalıdır.'\nD. 'Lastik basıncını düzenli olarak kontrol edin.'\nE. 'Araba kiralama hizmetlerimizden yararlanabilirsiniz.'\n\nSıralamanı ve her biri için kısa gerekçe yaz.",
+  "response": "1. A. 'Araç servis randevusu almak için bayiliğimizi arayın.'\n   - Gerekçe: Bu cümle, 'Araba bakımı yapmak istiyorum' referansına en yakın anlamsal benzerlik göstermektedir. Bayiliği aramak, genellikle bir araç bakımına hazırlık yapmayı içerir.\n\n2. C. 'Motor yağı değişimi her 10.000 km'de bir yapılmalıdır.'\n   - Gerekçe: Bu cümle, 'Araba bakımı yapmak istiyorum' referansına en yakın anlamsal benzerlik göstermektedir. Motor yağı değişimi, genellikle araç bakımının önemli bir parçasıdır.\n\n3. D. 'Lastik basıncını düzenli olarak kontrol edin.'\n   - Gerekçe: Bu cümle, 'Araba bakımı yapmak istiyorum' referansına en yakın anlamsal benzerlik göstermektedir. Lastik basıncını kontrol etme, genellikle araç bakımının önemli bir parçasıdır.\n\n4. E. 'Araba kiralama hizmetlerimizden yararlanabilirsiniz.'\n   - Gerekçe: Bu cümle, 'Araba bakımı yapmak istiyorum' referansına en uzak anlamsal benzerlik göstermektedir. Kiralama hizmetleri ve araç bakımı farklı konulardır.\n\n5. B. 'Yeni bir otomobil almayı düşünüyorum.'\n   - Gerekçe: Bu cümle, 'Araba bakımı yapmak istiyorum' referansına en uzak anlamsal benzerlik göstermektedir. Yeni bir araç satın almak ve onu hemen kullanmak, genellikle bakım gerektirmeyen bir süreçtir.",
+  "duration_sec": 13.4,
+  "timestamp": "2026-04-28T07:57:36.375087",
+  "expected_focus": [
+    "Semantic proximity",
+    "Context understanding",
+    "Not lexical overlap"
+  ],
+  "ai_evaluation": {
+    "correctness": "pending",
+    "hallucination": null,
+    "security_aware": null,
+    "completeness": "pending",
+    "idiomatic": null,
+    "notes": "AI evaluation pending."
+  }
+}

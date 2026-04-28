@@ -1,0 +1,32 @@
+{
+  "run_id": "fce7902d",
+  "model": "qwen3:14b",
+  "host": "http://192.168.240.30:11434",
+  "categories": [
+    "thinking"
+  ],
+  "total": 6,
+  "completed": 4,
+  "timeouts": 4,
+  "current_prompt_id": "thinking_requirement_conflict",
+  "current_category": "thinking",
+  "status": "cancelled",
+  "start_time": 1777322704.1472077,
+  "end_time": null,
+  "logs": [
+    "[WARMUP] Model belleğe yükleniyor, lütfen bekleyin...",
+    "  -> Warmup OK",
+    "[1/6] thinking_monty_hall | thinking | Running...",
+    "  -> TIMEOUT (180.0s / limit 180s)",
+    "[2/6] thinking_logical_fallacy | thinking | Running...",
+    "  -> TIMEOUT (181.0s / limit 180s)",
+    "[3/6] thinking_constraint_optimization | thinking | Running...",
+    "  -> TIMEOUT (180.0s / limit 180s)",
+    "[4/6] thinking_code_trace | thinking | Running...",
+    "  -> TIMEOUT (180.0s / limit 180s)",
+    "[5/6] thinking_requirement_conflict | thinking | Running...",
+    "  -> ERROR: Remote end closed connection without response",
+    "TEST CANCELLED BY USER."
+  ],
+  "results_dir": "results\\qwen3_14b_20260427_234504"
+}
