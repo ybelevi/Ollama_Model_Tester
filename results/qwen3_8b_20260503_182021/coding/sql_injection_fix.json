@@ -1,0 +1,20 @@
+{
+  "id": "sql_injection_fix",
+  "category": "coding",
+  "prompt": "Aşağıdaki Python/Flask kodunda SQL Injection açığı var. Düzelt ve nedenini açıkla:\n\n```python\nfrom flask import Flask, request\nimport sqlite3\napp = Flask(__name__)\n\n@app.route(\"/user\")\ndef get_user():\n    user_id = request.args.get(\"id\")\n    conn = sqlite3.connect(\"app.db\")\n    cursor = conn.cursor()\n    cursor.execute(\"SELECT * FROM users WHERE id = \" + user_id)\n    return str(cursor.fetchall())\n```",
+  "response": "Verilen Python/Flask kodu SQL Injection açığı içeriyor. Açığın nedeni, kullanıcıdan gelen `user_id` verisini doğrudan SQL sorgusuna eklemektedir. Bu durum, kötü niyetli kullanıcıların sorguyu manipüle etmesine olanak tanır. Örneğin, `id=1; DROP TABLE users;--` gibi bir giriş, veritabanını silebilir.\n\n### Düzeltme:\nSQL Injection açığını önlemek için **parametrik sorgular (parameterized queries)** kullanılmalıdır. Bu yöntem, SQL komutları ile veri arasında ayrım yapar ve kullanıcı girişi doğrudan SQL komutuna entegre edilmez.\n\n```python\nfrom flask import Flask, request\nimport sqlite3\napp = Flask(__name__)\n\n@app.route(\"/user\")\ndef get_user():\n    user_id = request.args.get(\"id\")\n    conn = sqlite3.connect(\"app.db\")\n    cursor = conn.cursor()\n    cursor.execute(\"SELECT * FROM users WHERE id = ?\", (user_id,))\n    result = cursor.fetchall()\n    conn.close()\n    return str(result)\n```\n\n### Açıklama:\n1. **Parametrik Sorgu Kullanımı**: `cursor.execute(\"SELECT * FROM users WHERE id = ?\", (user_id,))` satırında, `?` işareti bir yer tutucudur. Bu yer tutucu, kullanıcı girişi olarak değerlendirilir ve SQL komutuna doğrudan eklenmez. Bu, SQL Injection saldırılarını engeller.\n\n2. **Veri Türü Güvenliği**: `user_id` değişkeni, veritabanında saklanan `id` alanının türüne (örneğin, tamsayı) uygun şekilde işlenmelidir. Ancak, SQLite'nin tür dönüşümü özelliğinden yararlanarak bu kontrol gerekmez. Ancak, `user_id`'nin tamsayı olup olmadığını doğrulamak (örneğin, `int(user_id)`) ek güvenlik sağlar.\n\n3. **Kaynak Kapatma**: `conn.close()` ile veritabanı bağlantısını kapatmak, kaynakların doğru şekilde yönetilmesini sağlar.\n\n### Özet:\nSQL Injection açığını önlemek için kullanıcı girdilerini doğrudan SQL sorgusuna eklememeli, bunun yerine **parametrik sorgular** kullanılmalıdır. Bu yöntem, veri güvenliğini artırır ve kötü niyetli kullanıcıların veritabanını manipüle etmesini engeller.",
+  "duration_sec": 44.3,
+  "timestamp": "2026-05-03T18:35:08.479741",
+  "expected_focus": [
+    "Parameterized queries",
+    "Input validation"
+  ],
+  "ai_evaluation": {
+    "correctness": "pending",
+    "hallucination": null,
+    "security_aware": null,
+    "completeness": "pending",
+    "idiomatic": null,
+    "notes": "AI evaluation pending."
+  }
+}

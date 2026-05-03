@@ -47,18 +47,26 @@ SSH_CONFIG_FILE.parent.mkdir(exist_ok=True)
 CAPABILITIES_CACHE_FILE = BASE_DIR / "config" / "model_capabilities_cache.json"
 
 
-def _load_capabilities_cache() -> Dict[str, List[str]]:
-    """Load cached model capabilities from file."""
+def _load_capabilities_cache() -> Dict[str, Any]:
+    """Load cached model capabilities from file. Returns {model: {capabilities: [], cached_at: timestamp}}."""
     if CAPABILITIES_CACHE_FILE.exists():
         try:
             with open(CAPABILITIES_CACHE_FILE, "r", encoding="utf-8") as f:
-                return json.load(f)
+                data = json.load(f)
+            # Migrate old format {model: [caps]} to new format {model: {capabilities: [caps], cached_at: ts}}
+            migrated = {}
+            for key, val in data.items():
+                if isinstance(val, list):
+                    migrated[key] = {"capabilities": val, "cached_at": 0}  # Force refresh on old entries
+                elif isinstance(val, dict) and "capabilities" in val:
+                    migrated[key] = val
+            return migrated
         except Exception:
             pass
     return {}
 
 
-def _save_capabilities_cache(cache: Dict[str, List[str]]):
+def _save_capabilities_cache(cache: Dict[str, Any]):
     """Save model capabilities cache to file."""
     CAPABILITIES_CACHE_FILE.parent.mkdir(exist_ok=True)
     with open(CAPABILITIES_CACHE_FILE, "w", encoding="utf-8") as f:
@@ -75,7 +83,12 @@ def _fetch_model_capabilities(model_name: str) -> List[str]:
 
     cache = _load_capabilities_cache()
     if base_name in cache:
-        return cache[base_name]
+        entry = cache[base_name]
+        # Check if cache is fresh (7 days)
+        cached_at = entry.get("cached_at", 0)
+        if time.time() - cached_at < 604800:  # 7 days in seconds
+            return entry.get("capabilities", [])
+        # Stale cache, will refresh below
 
     try:
         url = f"https://ollama.com/library/{base_name}"
@@ -98,8 +111,8 @@ def _fetch_model_capabilities(model_name: str) -> List[str]:
 
         print(f"[CAPABILITIES] {base_name}: {capabilities}")
 
-        # Cache the result
-        cache[base_name] = capabilities
+        # Cache the result with timestamp
+        cache[base_name] = {"capabilities": capabilities, "cached_at": time.time()}
         _save_capabilities_cache(cache)
 
         return capabilities
@@ -489,119 +502,6 @@ async def run_test_task(run_id: str, host: str, model: str, categories: List[str
     state["logs"].append(f"TEST COMPLETED. Total: {total_elapsed/60:.1f} min | Timeouts: {timeout_count}")
     _save_state(run_id, state)
 
-    # Create results dir
-    safe_model = model.replace(":", "_").replace("/", "_")
-    ts = datetime.now().strftime("%Y%m%d_%H%M%S")
-    run_dir = RESULTS_DIR / f"{safe_model}_{ts}"
-    run_dir.mkdir(exist_ok=True)
-    state["results_dir"] = str(run_dir.relative_to(BASE_DIR))
-    _save_state(run_id, state)
-
-    # Manifest
-    manifest = {
-        "run_id": run_id,
-        "model": model,
-        "host": host,
-        "categories": categories,
-        "total_prompts": total,
-        "start_time": datetime.now().isoformat(),
-        "end_time": None,
-        "duration_sec": None,
-    }
-
-    history: Dict[str, str] = {}
-    completed_ids = set()
-
-    for idx, item in enumerate(all_prompts, 1):
-        # Check pause
-        while True:
-            st = _load_state(run_id)
-            if st and st.get("status") == "paused":
-                await asyncio.sleep(1)
-                continue
-            if st and st.get("status") == "error":
-                return
-            break
-
-        prompt_text = item["prompt"]
-        dep = item.get("depends_on")
-        if dep and dep in history:
-            prev = history[dep]
-            prompt_text = f"[Previous Work]\n---\n{prev}\n---\nNew Task: {item['prompt']}"
-        elif dep and dep not in history:
-            msg = f"[{idx}/{total}] {item['id']} | Dependency {dep} missing, skipping."
-            state["logs"].append(msg)
-            _save_state(run_id, state)
-            continue
-
-        msg = f"[{idx}/{total}] {item['id']} | {item['_category']} | Running..."
-        state["logs"].append(msg)
-        state["current_prompt_id"] = item["id"]
-        state["current_category"] = item["_category"]
-        _save_state(run_id, state)
-
-        t0 = time.time()
-        try:
-            response = await ollama_generate(host, model, prompt_text)
-            dur = time.time() - t0
-            history[item["id"]] = response
-            completed_ids.add(item["id"])
-
-            # Save result
-            cat_dir = run_dir / item["_category"]
-            cat_dir.mkdir(exist_ok=True)
-            result_obj = {
-                "id": item["id"],
-                "category": item["_category"],
-                "prompt": item["prompt"],
-                "response": response,
-                "duration_sec": round(dur, 1),
-                "timestamp": datetime.now().isoformat(),
-                "expected_focus": item.get("expected_focus", []),
-                "ai_evaluation": {
-                    "correctness": "pending",
-                    "hallucination": None,
-                    "security_aware": None,
-                    "completeness": "pending",
-                    "idiomatic": None,
-                    "notes": "AI evaluation pending."
-                }
-            }
-            with open(cat_dir / f"{item['id']}.json", "w", encoding="utf-8") as f:
-                json.dump(result_obj, f, ensure_ascii=False, indent=2)
-
-            ok_msg = f"  -> OK ({dur:.1f}s)"
-            state["logs"].append(ok_msg)
-        except Exception as e:
-            err_msg = f"  -> ERROR: {e}"
-            state["logs"].append(err_msg)
-            # Retry once
-            try:
-                await asyncio.sleep(2)
-                response = await ollama_generate(host, model, prompt_text)
-                dur = time.time() - t0
-                history[item["id"]] = response
-                completed_ids.add(item["id"])
-                state["logs"].append(f"  -> RETRY OK ({dur:.1f}s)")
-            except Exception as e2:
-                state["logs"].append(f"  -> RETRY FAILED: {e2}")
-
-        state["completed"] = len(completed_ids)
-        _save_state(run_id, state)
-        await asyncio.sleep(0.5)
-
-    # Finalize
-    total_elapsed = time.time() - start_time
-    manifest["end_time"] = datetime.now().isoformat()
-    manifest["duration_sec"] = round(total_elapsed, 1)
-    with open(run_dir / "manifest.json", "w", encoding="utf-8") as f:
-        json.dump(manifest, f, ensure_ascii=False, indent=2)
-
-    state["status"] = "completed"
-    state["end_time"] = time.time()
-    state["logs"].append(f"TEST COMPLETED. Total: {total_elapsed/60:.1f} min")
-    _save_state(run_id, state)
-
     # Unload model from GPU to free VRAM
     await unload_model_from_gpu(host, model)
 
@@ -792,6 +692,13 @@ async def active_tests():
                 "current_prompt": state.get("current_prompt_id"),
             })
     return {"active": active}
+
+
+@app.get("/api/model-capabilities")
+async def get_model_capabilities(name: str = Query(..., description="Model name (e.g. qwen3.5:9b)")):
+    """Get capabilities for a single model (fast, no full model list needed)."""
+    capabilities = _fetch_model_capabilities(name)
+    return {"model": name, "capabilities": capabilities}
 
 
 @app.get("/api/results")

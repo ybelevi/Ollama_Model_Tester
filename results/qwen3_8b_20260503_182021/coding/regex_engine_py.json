@@ -1,0 +1,21 @@
+{
+  "id": "regex_engine_py",
+  "category": "coding",
+  "prompt": "Python'da regex kullanmadan basit bir regex matcher yaz. Desteklemesi gerekenler: `.` (herhangi bir karakter) ve `*` (0 veya daha fazla tekrar). Fonksiyon imzasi: `def is_match(text: str, pattern: str) -> bool`. Recursive veya DP cozum kabul edilir. Sadece kod.",
+  "response": "[TIMEOUT] Model 240 saniye içinde cevap vermedi.",
+  "duration_sec": 240.0,
+  "timestamp": "2026-05-03T18:31:25.485507",
+  "expected_focus": [
+    "Recursion/DP",
+    "Correct star behavior",
+    "Edge cases"
+  ],
+  "ai_evaluation": {
+    "correctness": "timeout",
+    "hallucination": false,
+    "security_aware": null,
+    "completeness": "timeout",
+    "idiomatic": null,
+    "notes": "Prompt 240 sn timeout'a uğradı."
+  }
+}

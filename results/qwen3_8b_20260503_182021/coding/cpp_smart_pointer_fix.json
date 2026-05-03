@@ -1,0 +1,21 @@
+{
+  "id": "cpp_smart_pointer_fix",
+  "category": "coding",
+  "prompt": "Aşağıdaki C++ kodunda memory management hatası var. Düzelt ve açıkla:\n\n```cpp\n#include <iostream>\n\nclass Resource {\n    int* data;\npublic:\n    Resource() { data = new int[100]; }\n    ~Resource() { delete data; }\n    Resource(const Resource& other) {\n        data = other.data;\n    }\n};\n\nint main() {\n    Resource r1;\n    Resource r2 = r1;\n    return 0;\n}\n```",
+  "response": "Verilen C++ kodunda **shallow copy** (sığ kopyalama) hatası vardır. Bu hata, nesnelerin `Resource` sınıfının `data` üyesi olarak bellek alanlarını paylaşmaları sonucu ortaya çıkar. Bu durumda, iki nesne de aynı bellek alanını işaret eder ve bu alan iki kez silinir (double deletion), bu da **undefined behavior** (tanımsız davranış) yaratır.\n\n---\n\n### 🔍 Hata Açıklaması\n\n```cpp\nResource(const Resource& other) {\n    data = other.data;\n}\n```\n\nYukarıdaki kopyalama yapısı, `data` üyesini doğrudan kopyalar. Yani `r1` ve `r2` nesneleri aynı `int[100]` bellek alanını paylaşır. Bu durumda:\n\n1. `r1` yok edildiğinde (`~Resource()` çağrıldığında), `data` bellek alanı silinir.\n2. `r2` yok edildiğinde (`~Resource()` çağrıldığında), aynı `data` bellek alanı tekrar silinir.\n\nBu, **double deletion** (çift silme) olarak bilinir ve programın çalışması sırasında **segmentation fault** veya diğer tanımsız davranışlar ortaya çıkarabilir.\n\n---\n\n### ✅ Çözüm: Deep Copy (Derin Kopyalama)\n\n`Resource` sınıfının `copy constructor` ve `assignment operator` (atama operatörü) için **deep copy** (derin kopyalama) yapılmalıdır. Bu, `data` üyesinin bellek alanını kopyalayarak yeni bir alan tahsisi yapar.\n\n#### Düzeltilmiş Kod\n\n```cpp\n#include <iostream>\n\nclass Resource {\n    int* data;\npublic:\n    Resource() {\n        data = new int[100];\n    }\n\n    ~Resource() {\n        delete[] data;  // Bellek alanını serbest bırak\n    }\n\n    Resource(const Resource& other) {\n        data = new int[100];  // Yeni bellek tahsisi\n        for (int i = 0; i < 100; ++i) {\n            data[i] = other.data[i];  // Verileri kopyala\n        }\n    }\n\n    Resource& operator=(const Resource& other) {\n        if (this != &other) {  // Kendi kendine atama durumunu kontrol et\n            delete[] data;      // Eski bellek alanını serbest bırak\n            data = new int[100];  // Yeni bellek tahsisi\n            for (int i = 0; i < 100; ++i) {\n                data[i] = other.data[i];  // Verileri kopyala\n            }\n        }\n        return *this;\n    }\n};\n\nint main() {\n    Resource r1;\n    Resource r2 = r1;  // Deep copy ile kopyalama\n    return 0;\n}\n```\n\n---\n\n### 📌 Ekstra: Rule of Three\n\nC++'ta bellek yönetimi için **Rule of Three** (Üçlü Kural) geçerlidir:\n\n- **Destructor** tanımlanırsa, **copy constructor** ve **assignment operator** de tanımlanmalıdır.\n- **Copy constructor** tanımlanırsa, **assignment operator** de tanımlanmalıdır.\n- **Move constructor** ve **move assignment operator** de ekstra olarak tanımlanabilir (C++11 ve sonrası).\n\nBu kural, bellek yönetimi hatasını önler ve nesnelerin kopyalanması veya ataması sırasında sorun yaşanmasını engeller.\n\n---\n\n### 🧠 Özet\n\n- **Hata:** `copy constructor` sığ kopyalama yapar, bu nedenle bellek alanları iki kez silinir.\n- **Çözüm:** `copy constructor` ve `assignment operator` için **deep copy** (derin kopyalama) yapılmalıdır.\n- **Kural:** C++'ta bellek yönetimi için **Rule of Three** uygulanmalıdır.\n\nBu düzeltme ile program artık güvenli ve tanımsız davranışlardan uzaklaşır.",
+  "duration_sec": 65.2,
+  "timestamp": "2026-05-03T18:59:50.803646",
+  "expected_focus": [
+    "Rule of Three/Zero",
+    "deep copy",
+    "delete[] vs delete"
+  ],
+  "ai_evaluation": {
+    "correctness": "pending",
+    "hallucination": null,
+    "security_aware": null,
+    "completeness": "pending",
+    "idiomatic": null,
+    "notes": "AI evaluation pending."
+  }
+}

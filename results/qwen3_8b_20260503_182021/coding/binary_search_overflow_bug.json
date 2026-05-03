@@ -1,0 +1,20 @@
+{
+  "id": "binary_search_overflow_bug",
+  "category": "coding",
+  "prompt": "Aşağıdaki C binary search implementasyonunda klasik bir integer overflow bug'ı var. Bul ve düzelt:\n\n```c\nint binary_search(int arr[], int n, int target) {\n    int left = 0;\n    int right = n - 1;\n    while (left <= right) {\n        int mid = (left + right) / 2;\n        if (arr[mid] == target) return mid;\n        if (arr[mid] < target) left = mid + 1;\n        else right = mid - 1;\n    }\n    return -1;\n}\n```",
+  "response": "C dilindeki bu ikili arama (binary search) fonksiyonu, büyük dizilerde **integer overflow** (tamsayı taşması) riski taşıyor. Bu durum, `left` ve `right` değişkenlerinin toplanması sonucu ortaya çıkıyor. C'de tamsayılar genellikle 32-bitlik (sign-extended) olup, maksimum değeri `2^31 - 1` (2147483647) olur. Eğer `left` ve `right` değerleri bu limiti aşarsa, toplama işlemi sonucu negatif bir değer elde edilir ve bu da yanlış bir `mid` değeri üretir.\n\n---\n\n### 🔍 Sorunun Nedeni\n\nAşağıdaki satırda `left` ve `right` değerlerinin toplanması, büyük dizilerde tamsayı taşması (integer overflow) riski oluşturur:\n\n```c\nint mid = (left + right) / 2;\n```\n\nÖrneğin, `left = 2^30` ve `right = 2^30` ise toplam `2^31` olur. Bu değer 32-bit tamsayı aralığını aşar ve negatif bir değer olarak yorumlanır. Bu da `mid` değerinin yanlış hesaplanmasına neden olur.\n\n---\n\n### ✅ Çözüm\n\nTamsayı taşmasını önlemek için `mid` hesaplamasını şu şekilde değiştirebiliriz:\n\n```c\nint mid = left + (right - left) / 2;\n```\n\nBu yöntem, `right - left` farkını hesaplayarak `left` ile toplar. Bu şekilde `left` ve `right` değerlerinin toplanması yerine, farkın yarısı eklenir. Bu, tamsayı taşmasını önler ve aynı zamanda doğru `mid` değeri elde edilir.\n\n---\n\n### 🛠️ Düzeltilmiş Kod\n\n```c\nint binary_search(int arr[], int n, int target) {\n    int left = 0;\n    int right = n - 1;\n    while (left <= right) {\n        int mid = left + (right - left) / 2;\n        if (arr[mid] == target) return mid;\n        if (arr[mid] < target) left = mid + 1;\n        else right = mid - 1;\n    }\n    return -1;\n}\n```\n\n---\n\n### 📌 Açıklama\n\n- `mid = left + (right - left) / 2` ifadesi, `left` ve `right` değerlerinin toplanması yerine, `right - left` farkının yarısını `left` ile toplar.\n- Bu yöntem, tamsayı taşmasını önler ve aynı zamanda ikili arama algoritmasının doğru çalışmasını sağlar.\n- Bu değişiklik, özellikle büyük dizilerde (örneğin `n > 2^31`) kritik öneme sahiptir.\n\n---\n\n### 🧠 Ek Bilgi\n\nAlternatif olarak, `mid = (left + right) >> 1` ifadesi de kullanılabilir. Ancak bu, `left + right` toplamının tamsayı taşması riski taşıdığı için **hâlâ aynı sorunu** içerir. Dolayısıyla `left + (right - left) / 2` ifadesi daha güvenlidir.",
+  "duration_sec": 46.9,
+  "timestamp": "2026-05-03T18:51:57.982163",
+  "expected_focus": [
+    "(left + right) / 2 overflow",
+    "left + (right-left)/2"
+  ],
+  "ai_evaluation": {
+    "correctness": "pending",
+    "hallucination": null,
+    "security_aware": null,
+    "completeness": "pending",
+    "idiomatic": null,
+    "notes": "AI evaluation pending."
+  }
+}

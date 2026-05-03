@@ -1,0 +1,20 @@
+{
+  "id": "hallucination_react_quantum_hook",
+  "category": "coding",
+  "prompt": "React 19'da `useQuantumState` hook'u ile kuantum süperpozisyon mantığında bir sayaç (counter) componenti yaz. Eğer böyle bir hook yoksa, modern React ile aynı davranışı simüle et ve hook'un var olmadığını belirt.",
+  "response": "React 19'da `useQuantumState` hook'u mevcut değildir. Ancak, kuantum süperpozisyon mantığını simüle etmek için modern React (useState, useEffect, useMemo) kullanarak bir sayaç bileşenini yazabiliriz. Bu simülasyon, kuantum sisteminin \"çarpma\" (collapse) davranışını temsil eder: bir durumun gözlemlenmesi (render edilmesi) sırasında belirsizlik kaybolur ve bir değer belirlenir.\n\n### 🧠 Kuantum Sayaç Simülasyonu (React ile)\n\n```jsx\nimport React, { useState, useEffect } from 'react';\n\nfunction QuantumCounter() {\n  // Kuantum durumu: olasılık dağılımı (örneğin, 0 ve 1 arasında süperpozisyon)\n  const [probabilities, setProbabilities] = useState({ 0: 0.5, 1: 0.5 });\n\n  // Kuantum durumunu gözlemle (render ederken belirsizliği çözer)\n  const currentValue = () => {\n    let random = Math.random();\n    for (const [key, prob] of Object.entries(probabilities)) {\n      if (random < prob) {\n        return parseInt(key);\n      }\n      random -= prob;\n    }\n    return Math.max(...Object.keys(probabilities).map(k => parseInt(k)));\n  };\n\n  // Sayaç artırma işlemi: olasılık dağılımını günceller\n  const increment = () => {\n    setProbabilities(prev => {\n      const nextNumber = Math.max(...Object.keys(prev).map(k => parseInt(k))) + 1;\n      const newProbabilities = { ...prev };\n      newProbabilities[nextNumber] = (newProbabilities[nextNumber] || 0) + 0.1;\n      return newProbabilities;\n    });\n  };\n\n  return (\n    <div>\n      <h2>Kuantum Sayaç</h2>\n      <p>Değer: {currentValue()}</p>\n      <button onClick={increment}>Artır</button>\n    </div>\n  );\n}\n\nexport default QuantumCounter;\n```\n\n### 🔍 Açıklamalar\n\n1. **Olasılık Dağılımı (Probabilities):**  \n   `probabilities` durumu, kuantum süperpozisyonunu temsil eder. Örneğin, `{ 0: 0.5, 1: 0.5 }` ifadesi, sayaçın 0 veya 1 olma olasılığını eşit şekilde temsil eder.\n\n2. **Gözlemleme (Collapse):**  \n   `currentValue` fonksiyonu, `Math.random()` ile rastgele bir değer üretir ve bu değeri olasılık dağılımına göre çözer. Bu, kuantum sisteminin gözlemlenmesiyle belirsizliğin ortadan kalktığını simüle eder.\n\n3. **Süperpozisyon Değişimi:**  \n   `increment` fonksiyonu, olasılık dağılımını günceller. Örneğin, 0 ve 1 arasında süperpozisyonda iken, artırma işlemi 1'in olasılığını artırır. Bu, kuantum sisteminin zamanla durum değişimini simüle eder.\n\n### 📌 Not\nBu simülasyon, kuantum mekaniğinin temel kavramlarını (süperpozisyon, gözlemleme) temsil eder, ancak gerçek kuantum sisteminin karmaşıklığı (örneğin, entanglement, many-body problem) tam olarak yansıtmaz. Ancak, bu yaklaşım, kuantum mantığını klasik sistemlerde nasıl simüle edebileceğimizi gösterir.",
+  "duration_sec": 73.5,
+  "timestamp": "2026-05-03T18:23:58.255685",
+  "expected_focus": [
+    "useState/useReducer",
+    "Uydurma hook kullanimi"
+  ],
+  "ai_evaluation": {
+    "correctness": "pending",
+    "hallucination": null,
+    "security_aware": null,
+    "completeness": "pending",
+    "idiomatic": null,
+    "notes": "AI evaluation pending."
+  }
+}

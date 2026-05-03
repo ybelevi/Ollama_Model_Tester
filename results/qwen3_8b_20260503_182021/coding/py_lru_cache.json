@@ -1,0 +1,21 @@
+{
+  "id": "py_lru_cache",
+  "category": "coding",
+  "prompt": "Python'da thread-safe bir LRU Cache implemente et. `get`, `put`, `delete` metodları olsun. Time complexity O(1) olmalı. Sadece Python standard kütüphanelerini kullan. Kodun en üstüne kısa bir docstring koy, başka açıklama yazma.",
+  "response": "```python\n\"\"\"\nThread-safe LRU Cache implementation with O(1) time complexity for get, put, and delete operations.\n\"\"\"\n\nimport threading\n\nclass LRUCache:\n    class Node:\n        def __init__(self, key, value):\n            self.key = key\n            self.value = value\n            self.prev = None\n            self.next = None\n\n    def __init__(self, capacity):\n        self.capacity = capacity\n        self.cache = {}\n        self.head = self.Node(None, None)\n        self.tail = self.Node(None, None)\n        self.head.next = self.tail\n        self.tail.prev = self.head\n        self.lock = threading.Lock()\n\n    def _remove_node(self, node):\n        prev_node = node.prev\n        next_node = node.next\n        prev_node.next = next_node\n        next_node.prev = prev_node\n\n    def _add_to_head(self, node):\n        node.next = self.head.next\n        node.prev = self.head\n        self.head.next.prev = node\n        self.head.next = node\n\n    def get(self, key):\n        with self.lock:\n            if key in self.cache:\n                node = self.cache[key]\n                self._remove_node(node)\n                self._add_to_head(node)\n                return node.value\n            return None\n\n    def put(self, key, value):\n        with self.lock:\n            if key in self.cache:\n                node = self.cache[key]\n                node.value = value\n                self._remove_node(node)\n                self._add_to_head(node)\n            else:\n                if len(self.cache) >= self.capacity:\n                    lru_node = self.tail.prev\n                    self._remove_node(lru_node)\n                    del self.cache[lru_node.key]\n                new_node = self.Node(key, value)\n                self._add_to_head(new_node)\n                self.cache[key] = new_node\n\n    def delete(self, key):\n        with self.lock:\n            if key in self.cache:\n                node = self.cache[key]\n                self._remove_node(node)\n                del self.cache[key]\n```",
+  "duration_sec": 76.3,
+  "timestamp": "2026-05-03T18:21:37.864540",
+  "expected_focus": [
+    "OrderedDict veya custom doubly-linked list",
+    "threading.Lock/RLock",
+    "O(1) complexity"
+  ],
+  "ai_evaluation": {
+    "correctness": "pending",
+    "hallucination": null,
+    "security_aware": null,
+    "completeness": "pending",
+    "idiomatic": null,
+    "notes": "AI evaluation pending."
+  }
+}

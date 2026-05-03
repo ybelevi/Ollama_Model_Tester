@@ -299,6 +299,39 @@
       const model = currentModel;
       const categories = Array.from(selectedCategories);
 
+      // Capability check for manually typed models
+      let modelCapabilities = [];
+      const cachedModel = window.lastFetchedModels?.find(m => m.name === model);
+      if (cachedModel && cachedModel.capabilities) {
+        modelCapabilities = cachedModel.capabilities;
+      } else {
+        // Fetch capabilities for this specific model
+        try {
+          const capResp = await fetch(`${API_BASE}/model-capabilities?name=${encodeURIComponent(model)}`);
+          if (capResp.ok) {
+            const capData = await capResp.json();
+            modelCapabilities = capData.capabilities || [];
+            // Update UI highlights too
+            updateCategoryHighlights(modelCapabilities);
+          }
+        } catch (e) {
+          console.warn('Could not fetch capabilities for manually typed model:', e);
+        }
+      }
+
+      // Check if any selected category is unsupported
+      const capToCat = { vision: 'vision', tools: 'tools', thinking: 'thinking' };
+      const unsupported = categories.filter(catId => {
+        const requiredCap = Object.keys(capToCat).find(k => capToCat[k] === catId);
+        return requiredCap && !modelCapabilities.includes(requiredCap);
+      });
+      if (unsupported.length > 0) {
+        alert(`⛔ TEST BAŞLATILAMADI\n\nModel '${model}' şu yetenekleri desteklemiyor:\n${unsupported.map(c => '• ' + c.toUpperCase()).join('\n')}\n\nLütfen desteklenmeyen kategorileri kaldırın veya başka bir model seçin.`);
+        btn.disabled = false;
+        btn.innerHTML = '🚀 Testi Başlat';
+        return;
+      }
+
       try {
         const resp = await fetch(`${API_BASE}/test/start`, {
           method: 'POST',

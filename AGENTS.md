@@ -170,23 +170,19 @@ Yapılan değişiklikleri `README.md`'nin altına History bölümü olarak ekle.
 
 ## 🔔 BİR SONRAKİ OTURUM İÇİN HATIRLATMA
 
-**[2026-04-28] AÇIK SORUN: Model Capability Fetch Çalışmıyor**
+**[2026-04-28] ÇÖZÜLDÜ: Model Capability Fetch Sorunu**
 
-- `main.py`'de `_fetch_model_capabilities()` fonksiyonu Ollama sitesinden yetenekleri çekemiyor.
-- Tüm modellerde `no special capabilities` çıkıyor.
-- Debug log eklendi (`[API] Fetching capabilities for:`) ama console/terminalde hiç log görünmüyor.
-- **Muhtemel nedenler:** Firewall, SSL sertifika hatası, proxy, timeout (10sn yetmeyebilir), veya Ollama sitesinin HTML yapısı değişmiş olabilir.
-- **Yapılacaklar:**
-  1. Terminalde `python main.py` çalışırken logları kontrol et
-  2. Eğer log yoksa: `timeout=10`'u `timeout=30` yap
-  3. Eğer hala yoksa: Ollama sitesine curl/requests ile manuel test yap
-  4. Alternatif: Ollama API'sinden yetenek bilgisi var mı kontrol et
-  5. Son çare: statik bir capability mapping dictionary'i ekle (manuel bakım gerektirir)
+- `main.py`'de `_fetch_model_capabilities()` fonksiyonu artık düzgün çalışıyor.
+- Ollama sitesinden `vision`, `tools`, `thinking` yetenekleri başarıyla çekiliyor.
+- Cache dosyası (`config/model_capabilities_cache.json`) oluşturuluyor.
+- Model listesinde renkli capability badge'leri doğru şekilde görünüyor.
 
-**Eklenen ama tam çalışmayan özellikler:**
-- `main.py`: `_fetch_model_capabilities()` — Ollama sitesinden `vision/tools/thinking` çekme
-- `main.py`: `/api/models` — her modele `capabilities` array'i ekleme
-- `index.html`: Model listesinde capability badge'leri (renkli: vision=mavi, tools=yeşil, thinking=sarı)
+**Tamamlanan özellikler:**
+- `main.py`: `_fetch_model_capabilities()` — Ollama sitesinden yetenek çekme ✅
+- `main.py`: `/api/models` — her modele `capabilities` array'i ekleme ✅
+- `index.html`: Model listesinde capability badge'leri (renkli: vision=mavi, tools=yeşil, thinking=sarı) ✅
+- `index.html`: Kategori kartlarında yeteneğe göre vurgu (desteklenen=yeşil border, desteklenmeyen=soluk) ✅
+- `index.html`: Desteklenmeyen kategori seçimi tamamen engellendi (alert gösterip return) ✅
 - `index.html`: Kategori kartlarında yeteneğe göre vurgu (desteklenen=yeşil border, desteklenmeyen=soluk)
 - `index.html`: Desteklenmeyen kategori seçimi tamamen engellendi (alert gösterip return)
 - `test.html`: Thinking testleri için 5dk timeout bilgisi + uyarı banner
