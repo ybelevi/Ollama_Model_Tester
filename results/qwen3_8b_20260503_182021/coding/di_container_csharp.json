@@ -1,0 +1,21 @@
+{
+  "id": "di_container_csharp",
+  "category": "coding",
+  "prompt": "C#'ta basit bir Dependency Injection Container yaz. `Register<TInterface, TImplementation>()` ve `Resolve<TInterface>()` metodları olsun. Constructor injection desteklesin. Sadece kod.",
+  "response": "```csharp\nusing System;\nusing System.Collections.Generic;\nusing System.Reflection;\n\npublic class DIContainer\n{\n    private readonly Dictionary<Type, Type> _registrations = new();\n\n    public void Register<TInterface, TImplementation>() where TImplementation : TInterface\n    {\n        _registrations[typeof(TInterface)] = typeof(TImplementation);\n    }\n\n    public object Resolve(Type type)\n    {\n        if (!_registrations.TryGetValue(type, out var implementationType))\n        {\n            throw new InvalidOperationException($\"No registration found for {type}\");\n        }\n\n        var constructor = implementationType.GetConstructors().FirstOrDefault();\n        if (constructor == null)\n        {\n            throw new InvalidOperationException($\"No constructor found for {implementationType}\");\n        }\n\n        var parameters = constructor.GetParameters();\n        var resolvedParameters = new object[parameters.Length];\n\n        for (int i = 0; i < parameters.Length; i++)\n        {\n            resolvedParameters[i] = Resolve(parameters[i].ParameterType);\n        }\n\n        return constructor.Invoke(resolvedParameters);\n    }\n\n    public T Resolve<T>()\n    {\n        return (T)Resolve(typeof(T));\n    }\n}\n```",
+  "duration_sec": 100.7,
+  "timestamp": "2026-05-03T19:01:32.065456",
+  "expected_focus": [
+    "Reflection/Activator",
+    "Dictionary storage",
+    "Recursive resolution"
+  ],
+  "ai_evaluation": {
+    "correctness": "pending",
+    "hallucination": null,
+    "security_aware": null,
+    "completeness": "pending",
+    "idiomatic": null,
+    "notes": "AI evaluation pending."
+  }
+}

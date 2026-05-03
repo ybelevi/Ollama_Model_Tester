@@ -1,0 +1,23 @@
+{
+  "id": "crypto_hashlib_fix",
+  "category": "coding",
+  "prompt": "Aşağıdaki Python kodunda şifreleme (cryptography) hatası var. MD5 ve plain text comparison kullanılıyor. Düzelt ve modern best-practice'i uygula:\n\n```python\nimport hashlib\n\ndef check_password(password, stored_hash):\n    return hashlib.md5(password.encode()).hexdigest() == stored_hash\n```",
+  "response": "Aşağıdaki çözüm, şifreleme işlemi için **MD5 yerine modern ve güvenli bir yöntem olan bcrypt** kullanır. Bu yaklaşım, şifrelerin daha güvenli bir şekilde depolanmasını sağlar ve şifreleme işlemi sırasında **salt** (tuz) kullanımı gibi güvenlik önlemlerini içerir.\n\n---\n\n### 🛡️ Güncellenmiş ve Güvenli Şifre Kontrol Fonksiyonu\n\n```python\nimport bcrypt\n\ndef check_password(password, stored_hash):\n    \"\"\"\n    Şifreyi bcrypt ile karşılaştırır.\n    \n    Args:\n        password (str): Kullanıcının girdiği şifre.\n        stored_hash (str): Veritabanında saklanan bcrypt şifrelenmiş hash.\n    \n    Returns:\n        bool: Şifre doğruysa True, yanlışsa False.\n    \"\"\"\n    # Şifreyi byte formatına çevir\n    password_bytes = password.encode('utf-8')\n    # Veritabanındaki hash'i byte formatına çevir\n    stored_hash_bytes = stored_hash.encode('utf-8')\n    \n    # bcrypt ile şifreyi karşılaştır\n    return bcrypt.checkpw(password_bytes, stored_hash_bytes)\n```\n\n---\n\n### ✅ Modern Best Practices Uygulaması\n\n1. **MD5 yerine bcrypt kullan**:\n   - MD5, şifreleme için güvenli değildir (çok hızlı ve kolay tahmin edilebilir).\n   - `bcrypt` özel olarak şifreler için tasarlanmış bir algoritmadır ve **salt** (tuz) mekanizması içerir.\n\n2. **Şifreleri saklamak için bcrypt.hashpw kullan**:\n   ```python\n   import bcrypt\n\n   def hash_password(password):\n       \"\"\"Şifreyi bcrypt ile şifreler.\"\"\"\n       return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())\n   ```\n\n3. **Şifreleri saklamak için veritabanında byte formatında sakla**:\n   - `bcrypt.hashpw` fonksiyonu, şifreyi ve salt'ı birlikte saklar.\n   - Bu hash, veritabanında byte formatında saklanmalıdır.\n\n---\n\n### ⚠️ Uyarılar\n\n- **MD5'yi tamamen kaldır**:\n  - MD5, şifreleme için kullanılmamalıdır. Şifrelerin doğrulanması için `bcrypt`, `argon2`, veya `scrypt` gibi algoritmalar kullanılmalıdır.\n  \n- **Şifreleri doğrudan veritabanında saklamayın**:\n  - Şifrelerin doğrudan veritabanında saklanması yerine, şifrelenmiş hali saklanmalıdır.\n\n- **Kullanıcı şifrelerini doğrudan veritabanında saklamayın**:\n  - Şifrelerin doğrudan veritabanında saklanması yerine, şifrelenmiş hali saklanmalıdır.\n\n---\n\n### 📦 Gerekli Kütüphane\n\n`bcrypt` kütüphanesi, Python için şifreleme işlemleri için gerekli bir kütüphanedir. Kullanmaya başlamadan önce aşağıdaki komutu çalıştırın:\n\n```bash\npip install bcrypt\n```\n\n---\n\n### 📌 Örnek Kullanım\n\n```python\n# Şifreyi şifrele\npassword = \"mypass123\"\nhashed = hash_password(password)\n\n# Şifreyi doğrula\nis_valid = check_password(\"mypass123\", hashed)\nprint(is_valid)  # True döner\n```\n\n---\n\nBu çözüm, şifreleme işlemini daha güvenli hale getirir ve modern güvenlik standartlarını karşılar.",
+  "duration_sec": 60.8,
+  "timestamp": "2026-05-03T19:10:46.363063",
+  "expected_focus": [
+    "bcrypt",
+    "argon2",
+    "scrypt",
+    "salt",
+    "slow hash"
+  ],
+  "ai_evaluation": {
+    "correctness": "pending",
+    "hallucination": null,
+    "security_aware": null,
+    "completeness": "pending",
+    "idiomatic": null,
+    "notes": "AI evaluation pending."
+  }
+}

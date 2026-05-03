@@ -1,0 +1,22 @@
+{
+  "id": "pickle_security_fix",
+  "category": "coding",
+  "prompt": "Aşağıdaki Python kodunda güvenlik açığı var. `pickle.loads` kullanımı tehlikelidir. Düzelt ve alternatif güvenli serialization yöntemini uygula:\n\n```python\nimport pickle\nimport socket\n\ndef handle_client(conn):\n    data = conn.recv(4096)\n    obj = pickle.loads(data)\n    process(obj)\n```",
+  "response": "Pickle modülünün `loads` fonksiyonu, verilerin serileştirilmesi sırasında **arbitrary code execution** riski taşıdığı için güvenlik açığı oluşturur. Bu nedenle, güvenli bir alternatif olarak **JSON** (JavaScript Object Notation) kullanmak en yaygın ve güvenli yöntemdir. JSON, verilerin sadece veri olarak işlenmesini sağlar ve kod çalıştırma riskini ortadan kaldırır.\n\nAşağıda, güvenlik açığını gideren ve JSON kullanarak güvenli bir serialization yöntemi uygulanan kod örneği verilmiştir:\n\n---\n\n### Güvenli Alternatif: JSON Kullanımı\n\n```python\nimport json\nimport socket\n\ndef handle_client(conn):\n    try:\n        # Veriyi al\n        data = conn.recv(4096)\n        \n        # JSON verisini deserialize et\n        obj = json.loads(data.decode('utf-8'))  # UTF-8 kodlamasını belirtelim\n        \n        # İşleme devam et\n        process(obj)\n    except json.JSONDecodeError as e:\n        print(f\"Geçersiz JSON verisi alındı: {e}\")\n    except Exception as e:\n        print(f\"İşlem sırasında hata oluştu: {e}\")\n```\n\n---\n\n### Açıklamalar\n\n1. **`json.loads`**:\n   - JSON verisini Python nesnesine dönüştürür.\n   - Veri sadece **veri** olarak işlenir, kod çalıştırma riski yoktur.\n   - JSON, Python nesnelerini (örneğin `dict`, `list`, `str`, `int`, `float` vb.) destekler.\n\n2. **UTF-8 Kodlaması**:\n   - `data` byte dizisi olarak alınır ve `decode('utf-8')` ile stringe dönüştürülür. Bu, verinin doğru şekilde çözümlenmesini sağlar.\n\n3. **Hata Yönetimi**:\n   - `json.JSONDecodeError` ile geçersiz JSON verisi durumlarını yakalayabilirsiniz.\n   - Genel hata yakalama bloğu (`except Exception`) ekstra hataları da kontrol etmenizi sağlar.\n\n---\n\n### Ekstra Öneri: Veri Boyutu ve Parçalama\n\nEğer veri boyutu 4096 byte'ı aşarsa, `conn.recv(4096)` tek seferde tüm veriyi alamaz. Bu durumda veriyi parçalayarak toplamak gerekir:\n\n```python\ndef handle_client(conn):\n    buffer = b''\n    while True:\n        data = conn.recv(4096)\n        if not data:\n            break\n        buffer += data\n        if b'}' in buffer or b']' in buffer:  # JSON bitiş karakterlerini kontrol et\n            break\n    try:\n        obj = json.loads(buffer.decode('utf-8'))\n        process(obj)\n    except json.JSONDecodeError as e:\n        print(f\"Geçersiz JSON verisi alındı: {e}\")\n```\n\n---\n\n### Sonuç\n\nPickle yerine JSON kullanmak, veri güvenliğini artırır ve kod çalıştırma saldırılarına karşı koruma sağlar. Bu yöntem, hem güvenli hem de yaygın olarak kullanılan bir serialization formatıdır. Eğer daha karmaşık nesnelerin serileştirilmesi gerekiyorsa, **msgpack** veya **protobuf** gibi diğer alternatifler de kullanılabilir.",
+  "duration_sec": 50.8,
+  "timestamp": "2026-05-03T19:05:01.750644",
+  "expected_focus": [
+    "json",
+    "msgpack",
+    "protobuf",
+    "never unpickle untrusted data"
+  ],
+  "ai_evaluation": {
+    "correctness": "pending",
+    "hallucination": null,
+    "security_aware": null,
+    "completeness": "pending",
+    "idiomatic": null,
+    "notes": "AI evaluation pending."
+  }
+}

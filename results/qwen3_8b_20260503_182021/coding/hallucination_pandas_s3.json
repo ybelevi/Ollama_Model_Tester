@@ -1,0 +1,20 @@
+{
+  "id": "hallucination_pandas_s3",
+  "category": "coding",
+  "prompt": "Python'da pandas DataFrame'i doğrudan S3'e yükleyen `df.upload_to_s3(bucket, key)` metodunu kullanan bir kod yaz. Eğer pandas'ta böyle bir metod yoksa, gerçekte kullanılan `boto3` veya `s3fs` yaklaşımını göster ve metodun uydurma olduğunu belirt.",
+  "response": "Pandas kütüphanesi doğrudan bir `upload_to_s3` metoduna sahip değildir. Bu metod, kullanıcı tarafından tanımlanmış bir uydurma metod olup, gerçek uygulamada `boto3` (AWS SDK) veya `s3fs` (S3 dosya sistemi arayüzü) gibi kütüphanelerle gerçekleştirlir. Aşağıda bu yaklaşımları örneklerle açıklıyorum:\n\n---\n\n### ✅ **1. `boto3` Kullanarak DataFrame'i S3'e Yükleme**\n```python\nimport boto3\nimport pandas as pd\n\ndef upload_to_s3(df, bucket, key):\n    # DataFrame'i CSV dosyasına çevir\n    csv_buffer = df.to_csv(index=False, header=True, sep=\",\", encoding=\"utf-8\")\n    \n    # S3 dosyasına yazmak için boto3 istemci oluştur\n    s3_client = boto3.client(\"s3\")\n    \n    # Dosyayı S3'e yükle\n    s3_client.put_object(Bucket=bucket, Key=key, Body=csv_buffer)\n\n# Kullanım örneği\ndf = pd.DataFrame({\"col1\": [1, 2], \"col2\": [3, 4]})\nupload_to_s3(df, \"my-bucket\", \"data/myfile.csv\")\n```\n\n**Notlar:**\n- `boto3` kullanırken AWS kimlik bilgilerini `~/.aws/credentials` dosyasında veya ortam değişkenleri (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`) ile yönetmelisiniz.\n- Büyük veri setleri için `parquet` formatı tercih edilmelidir (performans ve boyut açısından).\n\n---\n\n### ✅ **2. `s3fs` Kullanarak DataFrame'i S3'e Yükleme**\n```python\nimport s3fs\nimport pandas as pd\n\ndef upload_to_s3(df, bucket, key):\n    # S3 dosya sistemi oluştur\n    fs = s3fs.S3FileSystem(anon=False)  # anon=False için AWS kimlik bilgileri gerekir\n    \n    # DataFrame'i S3 dosyasına yaz\n    with fs.open(f\"s3://{bucket}/{key}\", \"w\") as f:\n        df.to_csv(f, index=False, header=True, sep=\",\")\n\n# Kullanım örneği\ndf = pd.DataFrame({\"col1\": [1, 2], \"col2\": [3, 4]})\nupload_to_s3(df, \"my-bucket\", \"data/myfile.csv\")\n```\n\n**Notlar:**\n- `s3fs` kullanırken AWS kimlik bilgilerini `~/.aws/credentials` veya ortam değişkenleriyle yönetmelisiniz.\n- `s3fs` ile doğrudan DataFrame'i dosyaya yazmak mümkün olmasına rağmen, büyük veriler için bellek sorunları yaşanabilir. Bu durumda `dask` veya `pyarrow` gibi kütüphaneler tercih edilmelidir.\n\n---\n\n### ❌ **Uydurma Metodun Açıklaması**\n`df.upload_to_s3(bucket, key)` metodunun pandas'ta olmadığını belirtmek gerekir. Bu metod, kullanıcı tarafından tanımlanmış bir metod olup, yukarıdaki örneklerdeki gibi `boto3` veya `s3fs` ile uygulanmalıdır.\n\n---\n\n### 📌 Öneriler\n- **Küçük veri setleri:** CSV formatı yeterlidir.\n- **Büyük veri setleri:** `parquet` veya `orc` formatları tercih edilmelidir.\n- **Gizlilik:** AWS kimlik bilgilerini kod içinde değil, güvenli bir şekilde yönetin (örneğin, `awscli` veya `boto3`'ün varsayılan yapılandırması).\n\nİsterseniz bu işlemleri `pyarrow` veya `dask` gibi kütüphanelerle de optimize edebiliriz.",
+  "duration_sec": 39.4,
+  "timestamp": "2026-05-03T19:05:41.711681",
+  "expected_focus": [
+    "Uydurma metod",
+    "boto3/s3fs kullanimi"
+  ],
+  "ai_evaluation": {
+    "correctness": "pending",
+    "hallucination": null,
+    "security_aware": null,
+    "completeness": "pending",
+    "idiomatic": null,
+    "notes": "AI evaluation pending."
+  }
+}

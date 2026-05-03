@@ -1,0 +1,21 @@
+{
+  "id": "state_machine_email_validator",
+  "category": "coding",
+  "prompt": "Regex kullanmadan, sonlu durum makinesi (Finite State Machine) ile basit bir email validator yaz. `@` ve `.` kontrolü yapsın, boşluk ve geçersiz karakterleri reddetsin. Python. Sadece kod.",
+  "response": "To validate an email address using a **regular expression**, we need to ensure that the address follows standard email formatting rules. Here's a breakdown of the components and the final regex pattern:\n\n---\n\n### ✅ **Key Requirements for a Valid Email Address**\n\n1. **Local Part** (before the `@`):\n   - Can contain: letters (`a-z`, `A-Z`), digits (`0-9`), dots (`.`), underscores (`_`), hyphens (`-`), percent (`%`), plus (`+`), and periods (`.`).\n   - Cannot start or end with a dot (`.`).\n   - Cannot contain spaces or special characters like `#`, `^`, etc.\n\n2. **Domain Part** (after the `@`):\n   - Must contain at least one dot (`.`).\n   - Each segment (before and after the dot) must be valid:\n     - Cannot start or end with a hyphen (`-`).\n     - Can contain letters, digits, and hyphens.\n   - The top-level domain (TLD) must be at least 2 characters long (e.g., `.com`, `.org`, etc.).\n\n---\n\n### 🧠 **Regex Pattern**\n\nHere is a **robust regular expression** that matches valid email addresses:\n\n```regex\n^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$\n```\n\n---\n\n### 🔍 **Explanation of the Regex**\n\n- `^` and `$`: Anchors to ensure the entire string matches the pattern.\n- `[a-zA-Z0-9._%+-]+`: Matches the local part of the email.\n  - `+` ensures at least one character is present.\n- `@`: Matches the `@` symbol.\n- `[a-zA-Z0-9.-]+`: Matches the domain name before the final dot.\n- `\\.`: Matches the dot that separates the domain segments.\n- `[a-zA-Z]{2,}`: Matches the top-level domain (TLD), which must be at least 2 characters long.\n\n---\n\n### 📌 **Example Matches**\n\n- `user.name@example.com` ✅\n- `user+tag@domain.co.uk` ✅\n- `info@sub.domain.org` ✅\n\n---\n\n### ❌ **Invalid Examples**\n\n- `user@.com` ❌ (domain starts with a dot)\n- `user@domain.` ❌ (domain ends with a dot)\n- `user@domain.c` ❌ (TLD is only one character)\n- `user@domain..com` ❌ (consecutive dots in domain)\n\n---\n\n### ✅ **Final Answer**\n\n$$\n\\boxed{^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$}\n$$",
+  "duration_sec": 157.8,
+  "timestamp": "2026-05-03T19:04:10.410826",
+  "expected_focus": [
+    "State transitions",
+    "No regex",
+    "Edge cases like 'a@b.c'"
+  ],
+  "ai_evaluation": {
+    "correctness": "pending",
+    "hallucination": null,
+    "security_aware": null,
+    "completeness": "pending",
+    "idiomatic": null,
+    "notes": "AI evaluation pending."
+  }
+}

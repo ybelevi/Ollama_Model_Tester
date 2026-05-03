@@ -6,9 +6,9 @@
     "coding"
   ],
   "total": 46,
-  "completed": 22,
+  "completed": 29,
   "timeouts": 4,
-  "current_prompt_id": "di_container_csharp",
+  "current_prompt_id": "html_parser_tokenizer",
   "current_category": "coding",
   "status": "running",
   "start_time": 1777821621.4914143,
@@ -60,7 +60,21 @@
     "  -> OK (123.1s)",
     "[22/46] cpp_smart_pointer_fix | coding | Running...",
     "  -> OK (65.2s)",
-    "[23/46] di_container_csharp | coding | Running..."
+    "[23/46] di_container_csharp | coding | Running...",
+    "  -> OK (100.7s)",
+    "[24/46] state_machine_email_validator | coding | Running...",
+    "  -> OK (157.8s)",
+    "[25/46] pickle_security_fix | coding | Running...",
+    "  -> OK (50.8s)",
+    "[26/46] hallucination_pandas_s3 | coding | Running...",
+    "  -> OK (39.4s)",
+    "[27/46] diff_algorithm_simple | coding | Running...",
+    "  -> OK (189.9s)",
+    "[28/46] java_concurrent_hashmap_fix | coding | Running...",
+    "  -> OK (52.4s)",
+    "[29/46] crypto_hashlib_fix | coding | Running...",
+    "  -> OK (60.8s)",
+    "[30/46] html_parser_tokenizer | coding | Running..."
   ],
   "results_dir": "results\\qwen3_8b_20260503_182021"
 }
