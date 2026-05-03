@@ -1,0 +1,36 @@
+{
+  "run_id": "a8ae2f08",
+  "model": "qwen3:8b",
+  "host": "http://192.168.240.30:11434",
+  "categories": [
+    "coding"
+  ],
+  "total": 46,
+  "completed": 7,
+  "timeouts": 2,
+  "current_prompt_id": "json_parser_c",
+  "current_category": "coding",
+  "status": "running",
+  "start_time": 1777827699.6603796,
+  "end_time": null,
+  "logs": [
+    "[WARMUP] Model zaten bellekte yüklü, warmup atlanıyor...",
+    "  -> Warmup OK (cached)",
+    "[1/46] py_lru_cache | coding | Running...",
+    "  -> OK (61.5s)",
+    "[2/46] py_race_condition_debug | coding | Running...",
+    "  -> OK (71.9s)",
+    "[3/46] hallucination_numpy_quantum | coding | Running...",
+    "  -> OK (48.8s)",
+    "[4/46] hallucination_react_quantum_hook | coding | Running...",
+    "  -> TIMEOUT (240.0s / limit 240s)",
+    "[5/46] c_code_review_long | coding | Running...",
+    "  -> OK (147.9s)",
+    "[6/46] fastapi_crud_docker | coding | Running...",
+    "  -> OK (57.3s)",
+    "[7/46] regex_engine_py | coding | Running...",
+    "  -> TIMEOUT (240.0s / limit 240s)",
+    "[8/46] json_parser_c | coding | Running..."
+  ],
+  "results_dir": "results\\qwen3_8b_20260503_200139"
+}

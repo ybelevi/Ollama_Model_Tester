@@ -4,7 +4,7 @@
   "prompt": "Python'da regex kullanmadan basit bir regex matcher yaz. Desteklemesi gerekenler: `.` (herhangi bir karakter) ve `*` (0 veya daha fazla tekrar). Fonksiyon imzasi: `def is_match(text: str, pattern: str) -> bool`. Recursive veya DP cozum kabul edilir. Sadece kod.",
   "response": "[TIMEOUT] Model 240 saniye içinde cevap vermedi.",
   "duration_sec": 240.0,
-  "timestamp": "2026-05-03T18:31:25.485507",
+  "timestamp": "2026-05-03T20:16:10.127799",
   "expected_focus": [
     "Recursion/DP",
     "Correct star behavior",

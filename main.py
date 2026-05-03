@@ -256,26 +256,26 @@ def _load_state(run_id: str) -> Optional[Dict[str, Any]]:
 # Test Runner
 # ---------------------------------------------------------------------------
 
+def _get_current_gpu_signature() -> str:
+    """Get a unique signature for the current GPU setup."""
+    try:
+        import pynvml
+        pynvml.nvmlInit()
+        device_count = pynvml.nvmlDeviceGetCount()
+        gpu_names = []
+        for i in range(device_count):
+            handle = pynvml.nvmlDeviceGetHandleByIndex(i)
+            name = pynvml.nvmlDeviceGetName(handle)
+            gpu_names.append(name)
+        pynvml.nvmlShutdown()
+        return "_".join(gpu_names) if gpu_names else "no_gpu"
+    except Exception:
+        return "unknown_gpu"
+
+
 def _cleanup_old_results(model: str):
-    """Remove old result directories and status files for the same model."""
-    import shutil
-    safe_model = model.replace(":", "_").replace("/", "_")
-    removed = 0
-
-    # Scan results dir
-    if RESULTS_DIR.exists():
-        for entry in RESULTS_DIR.iterdir():
-            if not entry.is_dir():
-                continue
-            # Check if dir name starts with model name
-            if entry.name.startswith(safe_model + "_"):
-                try:
-                    shutil.rmtree(entry)
-                    removed += 1
-                except Exception as e:
-                    print(f"[WARN] Failed to remove old result dir {entry}: {e}")
-
-    # Also clean old status files from logs dir (matching model in state)
+    """Remove old status files for the same model, but keep result directories."""
+    # Only clean old status files from logs dir (matching model in state)
     if LOGS_DIR.exists():
         for entry in LOGS_DIR.glob("status_*.json"):
             try:
@@ -285,9 +285,6 @@ def _cleanup_old_results(model: str):
                     entry.unlink()
             except Exception:
                 pass
-
-    if removed > 0:
-        print(f"[INFO] Cleaned up {removed} old result(s) for model {model}")
 
 
 async def run_test_task(run_id: str, host: str, model: str, categories: List[str]):
@@ -325,13 +322,18 @@ async def run_test_task(run_id: str, host: str, model: str, categories: List[str
     }
     _save_state(run_id, state)
 
-    # Create results dir
+    # Create results dir with GPU info
     safe_model = model.replace(":", "_").replace("/", "_")
     ts = datetime.now().strftime("%Y%m%d_%H%M%S")
-    run_dir = RESULTS_DIR / f"{safe_model}_{ts}"
+    gpu_sig = _get_current_gpu_signature()
+    run_dir = RESULTS_DIR / f"{safe_model}_{ts}_{gpu_sig}"
     run_dir.mkdir(exist_ok=True)
     state["results_dir"] = str(run_dir.relative_to(BASE_DIR))
     _save_state(run_id, state)
+
+    # Get GPU info for manifest
+    gpu_info = _get_gpu_info()
+    gpu_names = [g["name"] for g in gpu_info.get("gpus", [])]
 
     # Manifest
     manifest = {
@@ -340,6 +342,11 @@ async def run_test_task(run_id: str, host: str, model: str, categories: List[str
         "host": host,
         "categories": categories,
         "total_prompts": total,
+        "gpu": {
+            "signature": gpu_sig,
+            "names": gpu_names,
+            "info": gpu_info,
+        },
         "start_time": datetime.now().isoformat(),
         "end_time": None,
         "duration_sec": None,
@@ -1308,6 +1315,27 @@ async def get_ranking():
 _marathon_states: Dict[str, Any] = {}
 _scheduler_loop: Optional[asyncio.AbstractEventLoop] = None
 
+# System notifications for errors
+_system_notifications: List[Dict[str, Any]] = []
+
+
+def _add_notification(level: str, title: str, message: str, source: str = ""):
+    """Add a system notification that users can poll."""
+    notif = {
+        "id": str(uuid.uuid4())[:8],
+        "level": level,  # error, warning, info
+        "title": title,
+        "message": message,
+        "source": source,
+        "timestamp": datetime.now().isoformat(),
+        "read": False,
+    }
+    _system_notifications.append(notif)
+    # Keep only last 50 notifications
+    while len(_system_notifications) > 50:
+        _system_notifications.pop(0)
+    print(f"[NOTIFICATION] [{level.upper()}] {title}: {message}")
+
 
 def _infer_capabilities(model_name: str) -> List[str]:
     """Infer model capabilities from name."""
@@ -1334,8 +1362,43 @@ async def _fetch_models_list(host: str) -> List[Dict[str, Any]]:
     return await loop.run_in_executor(None, _fetch)
 
 
+def _get_existing_test_results() -> Dict[str, Dict[str, Any]]:
+    """Scan results directory to find which model/category combinations are already tested.
+    Returns {model_name: {categories: [], gpu_signature: ''}}
+    """
+    completed = {}  # {model_name: {categories: [], gpu_signature: ''}}
+    if not RESULTS_DIR.exists():
+        return completed
+    
+    current_gpu = _get_current_gpu_signature()
+    
+    for result_dir in RESULTS_DIR.iterdir():
+        if not result_dir.is_dir():
+            continue
+        manifest_file = result_dir / "manifest.json"
+        if not manifest_file.exists():
+            continue
+        try:
+            with open(manifest_file, "r", encoding="utf-8") as f:
+                manifest = json.load(f)
+            model = manifest.get("model")
+            categories = manifest.get("categories", [])
+            gpu_sig = manifest.get("gpu", {}).get("signature", "unknown")
+            
+            if model:
+                if model not in completed:
+                    completed[model] = {"categories": [], "gpu_signature": gpu_sig}
+                for cat in categories:
+                    if cat not in completed[model]["categories"]:
+                        completed[model]["categories"].append(cat)
+        except Exception:
+            continue
+    return completed
+
+
 async def run_marathon_task(marathon_id: str, host: str):
     """Run tests for all installed models across their inferred capabilities."""
+    # Check if another marathon is running
     for mid, st in _marathon_states.items():
         if st.get("status") == "running" and mid != marathon_id:
             _marathon_states[marathon_id] = {
@@ -1355,46 +1418,173 @@ async def run_marathon_task(marathon_id: str, host: str):
         "models_completed": 0,
         "current_model": None,
         "current_category": None,
+        "current_prompt_id": None,
+        "current_prompt_text": None,
         "completed_tests": [],
-        "error": None,
+        "skipped_tests": [],
+        "errors": [],
     }
     _marathon_states[marathon_id] = state
 
     try:
         models = await _fetch_models_list(host)
-        state["models_total"] = len(models)
-
+        if not models:
+            _add_notification("error", "Marathon Başlatılamadı", 
+                            "Ollama sunucusunda hiç model bulunamadı. Lütfen önce model pull edin.", 
+                            "marathon")
+            raise RuntimeError("No models found on Ollama server. Please pull models first.")
+        
+        # Get existing test results
+        existing_results = _get_existing_test_results()
+        
+        # Get current GPU signature
+        current_gpu = _get_current_gpu_signature()
+        
+        # Calculate what needs to be tested
+        tests_to_run = []
+        skipped_models = []
+        gpu_changed_models = []
+        
         for model_info in models:
             model_name = model_info.get("name") or model_info.get("model")
             if not model_name:
                 continue
+            
             categories = _infer_capabilities(model_name)
+            existing_data = existing_results.get(model_name)
+            
+            if existing_data:
+                existing_cats = existing_data["categories"]
+                existing_gpu = existing_data.get("gpu_signature", "unknown")
+                
+                # Check if GPU changed
+                if existing_gpu != current_gpu:
+                    # GPU changed - need to retest but keep old results
+                    new_cats = categories  # Test all categories with new GPU
+                    gpu_changed_models.append({
+                        "model": model_name, 
+                        "old_gpu": existing_gpu, 
+                        "new_gpu": current_gpu,
+                        "categories": categories
+                    })
+                    tests_to_run.append({"model": model_name, "categories": new_cats, "all_categories": categories})
+                else:
+                    # Same GPU - only test new categories
+                    new_cats = [cat for cat in categories if cat not in existing_cats]
+                    if new_cats:
+                        tests_to_run.append({"model": model_name, "categories": new_cats, "all_categories": categories})
+                    else:
+                        skipped_models.append({"model": model_name, "tested_categories": existing_cats, "gpu": existing_gpu})
+            else:
+                # Never tested - test all
+                tests_to_run.append({"model": model_name, "categories": categories, "all_categories": categories})
+        
+        state["models_total"] = len(tests_to_run)
+        
+        # Notify user about GPU changes
+        if gpu_changed_models:
+            gpu_msg = "\n".join([f"• {m['model']}: {m['old_gpu']} → {m['new_gpu']}" for m in gpu_changed_models])
+            _add_notification("warning", "Ekran Kartı Değişikliği Tespit Edildi", 
+                            f"{len(gpu_changed_models)} model farklı ekran kartı ile yeniden test edilecek:\n{gpu_msg}", 
+                            "marathon")
+            print(f"[MARATHON] GPU changed for {len(gpu_changed_models)} models, retesting")
+        
+        # Notify user about skipped models
+        if skipped_models:
+            skip_msg = "\n".join([f"• {m['model']}: {', '.join(m['tested_categories'])} (GPU: {m['gpu']})" for m in skipped_models])
+            _add_notification("info", "Önceki Testler Atlandı", 
+                            f"{len(skipped_models)} model daha önce test edildiği için atlandı:\n{skip_msg}", 
+                            "marathon")
+            print(f"[MARATHON] Skipped {len(skipped_models)} already tested models")
+        
+        if not tests_to_run:
+            _add_notification("info", "Maraton Tamamlandı", 
+                            "Tüm modeller daha önce test edilmiş. Yeni model ekleyin.", 
+                            "marathon")
+            state["status"] = "completed"
+            state["ended_at"] = datetime.now().isoformat()
+            return
+        
+        _add_notification("info", "Marathon Başladı", 
+                         f"{len(tests_to_run)} model için test başlatıldı.", 
+                         "marathon")
+        print(f"[MARATHON] Found {len(tests_to_run)} models to test")
+
+        for test_item in tests_to_run:
+            model_name = test_item["model"]
+            categories = test_item["categories"]
             state["current_model"] = model_name
+            print(f"[MARATHON] Testing model: {model_name} with categories: {categories}")
 
             for cat in categories:
                 state["current_category"] = cat
                 run_id = str(uuid.uuid4())[:8]
                 state["current_run_id"] = run_id
-                task = asyncio.create_task(run_test_task(run_id, host, model_name, [cat]))
-                while True:
-                    await asyncio.sleep(5)
-                    st = _load_state(run_id)
-                    if st and st.get("status") in ("completed", "stopped", "failed", "error"):
-                        break
-                    if task.done():
-                        break
-                state["completed_tests"].append({
-                    "model": model_name,
-                    "category": cat,
-                    "run_id": run_id,
-                })
+                
+                try:
+                    task = asyncio.create_task(run_test_task(run_id, host, model_name, [cat]))
+                    while True:
+                        await asyncio.sleep(5)
+                        st = _load_state(run_id)
+                        # Update current prompt info for UI
+                        if st:
+                            state["current_prompt_id"] = st.get("current_prompt_id")
+                            # Load prompt text from prompts if available
+                            if st.get("current_prompt_id") and st.get("current_category"):
+                                try:
+                                    prompts = load_prompts(st["current_category"])
+                                    current_prompt = next((p for p in prompts if p["id"] == st["current_prompt_id"]), None)
+                                    if current_prompt:
+                                        state["current_prompt_text"] = current_prompt["prompt"][:100] + "..." if len(current_prompt["prompt"]) > 100 else current_prompt["prompt"]
+                                except Exception:
+                                    pass
+                        if st and st.get("status") in ("completed", "cancelled", "error"):
+                            break
+                        if task.done():
+                            break
+                    
+                    state["completed_tests"].append({
+                        "model": model_name,
+                        "category": cat,
+                        "run_id": run_id,
+                        "status": "completed",
+                    })
+                except Exception as e:
+                    error_msg = f"Failed to test {model_name}/{cat}: {str(e)}"
+                    print(f"[MARATHON ERROR] {error_msg}")
+                    state["errors"].append(error_msg)
+                    state["completed_tests"].append({
+                        "model": model_name,
+                        "category": cat,
+                        "run_id": run_id,
+                        "status": "failed",
+                        "error": str(e),
+                    })
+                
                 state["models_completed"] = len(state["completed_tests"])
 
-        state["status"] = "completed"
+        # Determine final status
+        if state["errors"]:
+            state["status"] = "completed_with_errors"
+            state["error_summary"] = f"{len(state['errors'])} tests failed"
+            _add_notification("warning", "Maraton Tamamlandı (Hatalarla)", 
+                            f"Maraton tamamlandı ancak {len(state['errors'])} test başarısız oldu.", 
+                            "marathon")
+        else:
+            state["status"] = "completed"
+            _add_notification("info", "Maraton Tamamlandı", 
+                            f"Tüm testler başarıyla tamamlandı. Toplam {len(state['completed_tests'])} test çalıştırıldı.", 
+                            "marathon")
+        
         state["ended_at"] = datetime.now().isoformat()
+        print(f"[MARATHON] Completed. Total tests: {len(state['completed_tests'])}")
+        
     except Exception as e:
+        error_msg = f"Marathon failed: {str(e)}"
+        print(f"[MARATHON ERROR] {error_msg}")
+        _add_notification("error", "Maraton Hatası", error_msg, "marathon")
         state["status"] = "failed"
-        state["error"] = str(e)
+        state["error"] = error_msg
         state["ended_at"] = datetime.now().isoformat()
 
 
@@ -1423,6 +1613,25 @@ async def get_latest_marathon():
         raise HTTPException(status_code=404, detail="No marathon found")
     latest = max(_marathon_states.values(), key=lambda x: x.get("started_at", ""))
     return latest
+
+
+@app.get("/api/notifications")
+async def get_notifications(unread_only: bool = Query(default=False)):
+    """Get system notifications (errors, warnings, etc.)"""
+    notifs = _system_notifications
+    if unread_only:
+        notifs = [n for n in notifs if not n.get("read")]
+    return {"notifications": notifs}
+
+
+@app.post("/api/notifications/{notif_id}/read")
+async def mark_notification_read(notif_id: str):
+    """Mark a notification as read."""
+    for n in _system_notifications:
+        if n["id"] == notif_id:
+            n["read"] = True
+            return {"success": True}
+    raise HTTPException(status_code=404, detail="Notification not found")
 
 
 def _start_scheduler():

@@ -445,6 +445,41 @@
     });
     document.getElementById('ollamaHost').addEventListener('input', saveFormState);
 
+    // Global notification polling
+    async function pollNotifications() {
+      try {
+        const resp = await fetch(`${API_BASE}/notifications?unread_only=true`);
+        if (!resp.ok) return;
+        const data = await resp.json();
+        const notifs = data.notifications || [];
+        if (notifs.length > 0) {
+          // Show latest notification as toast
+          const latest = notifs[notifs.length - 1];
+          const colors = { error: 'danger', warning: 'warning', info: 'info' };
+          const icons = { error: '❌', warning: '⚠️', info: 'ℹ️' };
+          const color = colors[latest.level] || 'secondary';
+          const icon = icons[latest.level] || '📌';
+          
+          // Create toast notification
+          const toastContainer = document.createElement('div');
+          toastContainer.style.cssText = 'position:fixed;top:20px;right:20px;z-index:9999;max-width:400px;';
+          toastContainer.innerHTML = `
+            <div class="alert alert-${color} alert-dismissible fade show shadow">
+              <strong>${icon} ${latest.title}</strong><br>
+              <small>${latest.message}</small>
+              <button type="button" class="btn-close" data-bs-dismiss="alert" onclick="this.parentElement.parentElement.remove()"></button>
+            </div>
+          `;
+          document.body.appendChild(toastContainer);
+          setTimeout(() => toastContainer.remove(), 10000);
+        }
+      } catch (e) { /* ignore */ }
+    }
+    
+    // Poll notifications every 10 seconds
+    setInterval(pollNotifications, 10000);
+    pollNotifications(); // Initial check
+
     loadFormState();
     initCategories();
     updateStartButton();

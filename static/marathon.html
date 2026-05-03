@@ -11,6 +11,20 @@
     .model-card { transition: transform .12s; }
     .model-card:hover { transform: translateY(-1px); }
     .progress-marathon { height: 1.5rem; }
+    .prompt-box { 
+      background: #f8f9fa; 
+      border-left: 4px solid #0d6efd; 
+      padding: 10px; 
+      margin-top: 10px;
+      border-radius: 0 4px 4px 0;
+      font-size: 0.9rem;
+      max-height: 100px;
+      overflow-y: auto;
+    }
+    .current-info { 
+      font-size: 0.95rem; 
+      padding: 5px 0; 
+    }
   </style>
 </head>
 <body>
@@ -82,9 +96,14 @@
           <div class="progress progress-marathon mb-3">
             <div class="progress-bar progress-bar-striped progress-bar-animated" id="progressBar" style="width: 0%">0%</div>
           </div>
-          <div class="row">
-            <div class="col-md-6"><strong>Şu anki model:</strong> <span id="currentModel" class="text-primary">-</span></div>
-            <div class="col-md-6"><strong>Şu anki kategori:</strong> <span id="currentCategory" class="text-primary">-</span></div>
+          <div class="row current-info">
+            <div class="col-md-3"><strong>🤖 Model:</strong> <span id="currentModel" class="text-primary">-</span></div>
+            <div class="col-md-3"><strong>📂 Kategori:</strong> <span id="currentCategory" class="text-primary">-</span></div>
+            <div class="col-md-3"><strong>❓ Soru ID:</strong> <span id="currentPrompt" class="text-primary">-</span></div>
+            <div class="col-md-3"><strong>🎮 GPU:</strong> <span id="currentGPU" class="text-info">-</span></div>
+          </div>
+          <div class="prompt-box" id="promptTextContainer" style="display:none;">
+            <strong>📝 Soru:</strong> <span id="promptText">-</span>
           </div>
         </div>
       </div>
@@ -117,22 +136,43 @@
       </div>
     </div>
 
+    <!-- Skipped Models Info -->
+    <div id="skippedPanel" class="d-none mb-4">
+      <div class="card border-info">
+        <div class="card-header bg-info text-white">
+          <span>ℹ️ Daha Önce Test Edilmiş Modeller (Atlandı)</span>
+        </div>
+        <div class="card-body">
+          <p class="text-muted small">Bu modeller daha önce test edildiği için tekrar test edilmeyecek:</p>
+          <div id="skippedList"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Notifications Panel -->
+    <div id="notificationsPanel" class="d-none mb-4">
+      <h5 class="mb-3">🔔 Sistem Bildirimleri</h5>
+      <div id="notificationsList"></div>
+    </div>
+
     <div id="error" class="alert alert-danger d-none mt-4"></div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   <script>
     const API_BASE = window.location.origin + '/api';
-    const HOST = 'http://192.168.240.30:11434';
     const CAT_COUNTS = {coding: 46, vision: 8, tools: 6, thinking: 6, embedding: 4};
 
     let modelsData = [];
     let marathonId = null;
     let pollTimer = null;
+    let lastModel = null;
+    let lastPrompt = null;
 
     async function loadModels() {
       try {
-        const resp = await fetch(`${HOST}/api/tags`);
+        // Use backend API instead of direct Ollama connection
+        const resp = await fetch(`${API_BASE}/models`);
         if (!resp.ok) throw new Error('HTTP ' + resp.status);
         const data = await resp.json();
         modelsData = (data.models || []).map(m => {
@@ -145,7 +185,10 @@
       } catch (e) {
         document.getElementById('loading').classList.add('d-none');
         document.getElementById('error').classList.remove('d-none');
-        document.getElementById('error').textContent = 'Hata: ' + e.message;
+        document.getElementById('error').innerHTML = `
+          <strong>❌ Bağlantı Hatası:</strong> ${e.message}<br>
+          <small>Lütfen Ollama sunucusunun çalıştığından ve backend'e erişilebildiğinden emin olun.</small>
+        `;
       }
     }
 
@@ -262,14 +305,92 @@
       document.getElementById('progressPanel').classList.remove('d-none');
       document.getElementById('topActions').classList.add('d-none');
       document.getElementById('summaryCard').classList.add('d-none');
+      
+      const currentModel = data.current_model || '-';
+      const currentCategory = data.current_category || '-';
+      
+      // Check if model changed - flash highlight instead of reload
+      if (lastModel && lastModel !== currentModel && currentModel !== '-') {
+        _flashModelChange(currentModel);
+      }
+      lastModel = currentModel;
+      
       const total = data.models_total || 1;
       const done = data.models_completed || 0;
       const pct = Math.round((done / total) * 100);
       document.getElementById('progressBar').style.width = pct + '%';
       document.getElementById('progressBar').textContent = pct + '%';
       document.getElementById('progressText').textContent = `${done} / ${total}`;
-      document.getElementById('currentModel').textContent = data.current_model || '-';
-      document.getElementById('currentCategory').textContent = data.current_category || '-';
+      document.getElementById('currentModel').textContent = currentModel;
+      document.getElementById('currentCategory').textContent = currentCategory;
+      
+      // Show GPU info
+      const gpuInfo = data.gpu_info || 'Bilinmiyor';
+      document.getElementById('currentGPU').textContent = gpuInfo;
+      
+      // Show current prompt info
+      const promptId = data.current_prompt_id || '-';
+      const promptText = data.current_prompt_text || '';
+      
+      // Flash effect when prompt changes
+      if (lastPrompt && lastPrompt !== promptId && promptId !== '-') {
+        _flashPromptChange(promptId);
+      }
+      lastPrompt = promptId;
+      
+      document.getElementById('currentPrompt').textContent = promptId;
+      
+      const promptContainer = document.getElementById('promptTextContainer');
+      const promptTextEl = document.getElementById('promptText');
+      if (promptText) {
+        promptTextEl.textContent = promptText;
+        promptContainer.style.display = 'block';
+      } else {
+        promptContainer.style.display = 'none';
+      }
+      
+      // Show skipped models if available
+      if (data.skipped_tests && data.skipped_tests.length > 0) {
+        renderSkippedModels(data.skipped_tests);
+      }
+    }
+    
+    function renderSkippedModels(skippedTests) {
+      const panel = document.getElementById('skippedPanel');
+      const list = document.getElementById('skippedList');
+      
+      panel.classList.remove('d-none');
+      list.innerHTML = skippedTests.map(item => `
+        <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+          <span class="fw-bold">${item.model}</span>
+          <span class="badge bg-secondary">${item.tested_categories.join(', ')}</span>
+        </div>
+      `).join('');
+    }
+    
+    function _flashPromptChange(newPrompt) {
+      const promptEl = document.getElementById('currentPrompt');
+      promptEl.classList.add('fw-bold', 'text-warning');
+      promptEl.style.transition = 'all 0.5s';
+      
+      setTimeout(() => {
+        promptEl.classList.remove('fw-bold', 'text-warning');
+      }, 2000);
+    }
+    
+    function _flashModelChange(newModel) {
+      // Visual flash effect when model changes
+      const modelEl = document.getElementById('currentModel');
+      modelEl.classList.add('fw-bold', 'text-success');
+      modelEl.style.transition = 'all 0.5s';
+      
+      // Show toast notification
+      _addNotification('info', 'Yeni Model', `Şimdi test ediliyor: ${newModel}`, '');
+      
+      // Remove highlight after 2 seconds
+      setTimeout(() => {
+        modelEl.classList.remove('fw-bold', 'text-success');
+      }, 2000);
     }
 
     function startPolling() {
@@ -288,9 +409,97 @@
             document.getElementById('summaryCard').classList.remove('d-none');
             document.getElementById('progressPanel').classList.add('d-none');
             document.getElementById('btnStart').textContent = data.status === 'completed' ? '🔄 Yeniden Başlat' : '🚀 Maratonu Başlat';
+            
+            // Show final status notification
+            if (data.status === 'completed_with_errors') {
+              _addNotification('warning', 'Maraton Tamamlandı (Hatalarla)', 
+                `${data.errors?.length || 0} test başarısız oldu.`, data.error_summary || '');
+            } else if (data.status === 'failed') {
+              _addNotification('error', 'Maraton Başarısız', data.error || 'Bilinmeyen hata', '');
+            }
           }
         } catch (e) { /* ignore */ }
       }, 3000);
+      
+      // Also start notification polling
+      startNotificationPolling();
+    }
+    
+    // Notification system
+    let notifTimer = null;
+    let lastNotifCount = 0;
+    
+    function startNotificationPolling() {
+      if (notifTimer) clearInterval(notifTimer);
+      notifTimer = setInterval(async () => {
+        try {
+          const resp = await fetch(`${API_BASE}/notifications?unread_only=true`);
+          if (!resp.ok) return;
+          const data = await resp.json();
+          const notifs = data.notifications || [];
+          
+          if (notifs.length > 0) {
+            renderNotifications(notifs);
+          }
+        } catch (e) { /* ignore */ }
+      }, 5000);
+    }
+    
+    function renderNotifications(notifs) {
+      const panel = document.getElementById('notificationsPanel');
+      const list = document.getElementById('notificationsList');
+      
+      if (notifs.length > 0) {
+        panel.classList.remove('d-none');
+        list.innerHTML = notifs.map(n => {
+          const colors = { error: 'danger', warning: 'warning', info: 'info' };
+          const icons = { error: '❌', warning: '⚠️', info: 'ℹ️' };
+          const color = colors[n.level] || 'secondary';
+          const icon = icons[n.level] || '📌';
+          return `
+            <div class="alert alert-${color} alert-dismissible fade show">
+              <strong>${icon} ${n.title}</strong><br>
+              <small>${n.message}</small><br>
+              <small class="text-muted">${new Date(n.timestamp).toLocaleTimeString()}</small>
+              <button type="button" class="btn-close" onclick="markRead('${n.id}')"></button>
+            </div>
+          `;
+        }).join('');
+      }
+    }
+    
+    async function markRead(notifId) {
+      try {
+        await fetch(`${API_BASE}/notifications/${notifId}/read`, { method: 'POST' });
+        // Refresh notifications
+        const resp = await fetch(`${API_BASE}/notifications?unread_only=true`);
+        if (resp.ok) {
+          const data = await resp.json();
+          renderNotifications(data.notifications || []);
+        }
+      } catch (e) { console.error(e); }
+    }
+    
+    // Helper to show local notifications
+    function _addNotification(level, title, message, detail) {
+      const panel = document.getElementById('notificationsPanel');
+      const list = document.getElementById('notificationsList');
+      panel.classList.remove('d-none');
+      
+      const colors = { error: 'danger', warning: 'warning', info: 'info' };
+      const icons = { error: '❌', warning: '⚠️', info: 'ℹ️' };
+      const color = colors[level] || 'secondary';
+      const icon = icons[level] || '📌';
+      
+      const div = document.createElement('div');
+      div.className = `alert alert-${color} alert-dismissible fade show`;
+      div.innerHTML = `
+        <strong>${icon} ${title}</strong><br>
+        <small>${message}</small>
+        ${detail ? `<br><small class="text-muted">${detail}</small>` : ''}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      `;
+      list.insertBefore(div, list.firstChild);
     }
 
     loadModels();

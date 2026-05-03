@@ -1,55 +1,97 @@
 {
-  "qwen3": [
-    "tools",
-    "thinking"
-  ],
-  "mistral-nemo": [
-    "tools"
-  ],
-  "granite3.1-moe": [
-    "tools"
-  ],
-  "granite4": [
-    "tools"
-  ],
-  "qwen3-vl": [
-    "vision",
-    "tools",
-    "thinking"
-  ],
-  "ministral-3": [
-    "vision",
-    "tools"
-  ],
-  "lfm2.5-thinking": [
-    "tools",
-    "thinking"
-  ],
-  "gemma4": [
-    "vision",
-    "tools",
-    "thinking"
-  ],
-  "mistral": [
-    "tools"
-  ],
-  "deepseek-r1": [
-    "tools",
-    "thinking"
-  ],
-  "granite3.3": [
-    "tools"
-  ],
-  "nemotron-3-nano": [
-    "tools",
-    "thinking"
-  ],
-  "Qwen2.5-Coder": [
-    "tools"
-  ],
-  "qwen3.5": [
-    "vision",
-    "tools",
-    "thinking"
-  ]
+  "qwen3": {
+    "capabilities": [
+      "tools",
+      "thinking"
+    ],
+    "cached_at": 1777826012.632732
+  },
+  "mistral-nemo": {
+    "capabilities": [
+      "tools"
+    ],
+    "cached_at": 1777826013.075142
+  },
+  "granite3.1-moe": {
+    "capabilities": [
+      "tools"
+    ],
+    "cached_at": 1777826013.55784
+  },
+  "granite4": {
+    "capabilities": [
+      "tools"
+    ],
+    "cached_at": 1777826013.9755437
+  },
+  "qwen3-vl": {
+    "capabilities": [
+      "vision",
+      "tools",
+      "thinking"
+    ],
+    "cached_at": 1777826014.4251
+  },
+  "ministral-3": {
+    "capabilities": [
+      "vision",
+      "tools"
+    ],
+    "cached_at": 1777826014.907381
+  },
+  "lfm2.5-thinking": {
+    "capabilities": [
+      "tools",
+      "thinking"
+    ],
+    "cached_at": 1777826015.3207862
+  },
+  "gemma4": {
+    "capabilities": [
+      "vision",
+      "tools",
+      "thinking"
+    ],
+    "cached_at": 1777826015.7844245
+  },
+  "mistral": {
+    "capabilities": [
+      "tools"
+    ],
+    "cached_at": 1777826016.219498
+  },
+  "deepseek-r1": {
+    "capabilities": [
+      "tools",
+      "thinking"
+    ],
+    "cached_at": 1777826016.6712732
+  },
+  "granite3.3": {
+    "capabilities": [
+      "tools"
+    ],
+    "cached_at": 1777826017.081344
+  },
+  "nemotron-3-nano": {
+    "capabilities": [
+      "tools",
+      "thinking"
+    ],
+    "cached_at": 1777826017.5068195
+  },
+  "Qwen2.5-Coder": {
+    "capabilities": [
+      "tools"
+    ],
+    "cached_at": 1777826018.2284918
+  },
+  "qwen3.5": {
+    "capabilities": [
+      "vision",
+      "tools",
+      "thinking"
+    ],
+    "cached_at": 1777826018.7462826
+  }
 }

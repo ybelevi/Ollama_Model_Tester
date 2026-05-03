@@ -125,11 +125,17 @@
       Object.values(categories).forEach(arr => completed += arr.length);
       const duration = manifest.duration_sec ? `${(manifest.duration_sec / 60).toFixed(1)} dk` : 'Devam ediyor';
 
+      // GPU Info
+      const gpuInfo = manifest.gpu || {};
+      const gpuNames = gpuInfo.names || [];
+      const gpuText = gpuNames.length > 0 ? gpuNames.join(', ') : 'Bilinmiyor';
+
       document.getElementById('statsRow').innerHTML = `
-        <div class="col-3"><div class="display-6">${total}</div><div class="text-muted">Toplam Test</div></div>
-        <div class="col-3"><div class="display-6 text-success">${completed}</div><div class="text-muted">Tamamlanan</div></div>
-        <div class="col-3"><div class="display-6">${Object.keys(categories).length}</div><div class="text-muted">Kategori</div></div>
+        <div class="col-2"><div class="display-6">${total}</div><div class="text-muted">Toplam Test</div></div>
+        <div class="col-2"><div class="display-6 text-success">${completed}</div><div class="text-muted">Tamamlanan</div></div>
+        <div class="col-2"><div class="display-6">${Object.keys(categories).length}</div><div class="text-muted">Kategori</div></div>
         <div class="col-3"><div class="display-6">${duration}</div><div class="text-muted">Süre</div></div>
+        <div class="col-3"><div class="display-6 text-info" style="font-size: 1.5rem;">${gpuText}</div><div class="text-muted">Ekran Kartı</div></div>
       `;
 
       // AI Commentary (simulated for now, could be enhanced)
