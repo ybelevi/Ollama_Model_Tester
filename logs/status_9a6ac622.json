@@ -6,9 +6,9 @@
     "coding"
   ],
   "total": 46,
-  "completed": 29,
-  "timeouts": 4,
-  "current_prompt_id": "html_parser_tokenizer",
+  "completed": 31,
+  "timeouts": 5,
+  "current_prompt_id": "llm_client_resilient_py",
   "current_category": "coding",
   "status": "running",
   "start_time": 1777821621.4914143,
@@ -74,7 +74,11 @@
     "  -> OK (52.4s)",
     "[29/46] crypto_hashlib_fix | coding | Running...",
     "  -> OK (60.8s)",
-    "[30/46] html_parser_tokenizer | coding | Running..."
+    "[30/46] html_parser_tokenizer | coding | Running...",
+    "  -> TIMEOUT (240.0s / limit 240s)",
+    "[31/46] dijkstra_algorithm_py | coding | Running...",
+    "  -> OK (39.0s)",
+    "[32/46] llm_client_resilient_py | coding | Running..."
   ],
   "results_dir": "results\\qwen3_8b_20260503_182021"
 }
