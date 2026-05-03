@@ -1,0 +1,20 @@
+{
+  "id": "sql_injection_fix",
+  "category": "coding",
+  "prompt": "Aşağıdaki Python/Flask kodunda SQL Injection açığı var. Düzelt ve nedenini açıkla:\n\n```python\nfrom flask import Flask, request\nimport sqlite3\napp = Flask(__name__)\n\n@app.route(\"/user\")\ndef get_user():\n    user_id = request.args.get(\"id\")\n    conn = sqlite3.connect(\"app.db\")\n    cursor = conn.cursor()\n    cursor.execute(\"SELECT * FROM users WHERE id = \" + user_id)\n    return str(cursor.fetchall())\n```",
+  "response": "Verilen kodda SQL Injection açığı var. Açığın nedeni ve düzeltme yolu aşağıda açıklanmıştır:\n\n---\n\n### **Açığın Nedeni**\nKodda `user_id` değişkeni doğrudan SQL sorgusuna **string concatenation** (string birleştirme) yöntemiyle eklenmiştir:\n\n```python\ncursor.execute(\"SELECT * FROM users WHERE id = \" + user_id)\n```\n\nBu yaklaşım, kullanıcı girdisindeki verilerin SQL komutuna doğrudan entegre edilmesine izin verir. Bu durumda, bir saldırgan aşağıdaki gibi bir `id` parametresi göndererek veritabanına zarar verebilir:\n\n```\nid=1; DROP TABLE users; --\n```\n\nBu giriş, SQL komutunu şu şekilde değiştirir:\n\n```sql\nSELECT * FROM users WHERE id = 1; DROP TABLE users; --\n```\n\nBu sorgu, `users` tablosunu silmeyi çalışır. Bu tür saldırılar, veritabanı bütünlüğünü bozar, verileri silebilir veya veritabanına erişim izni veren kullanıcıları etkileyebilir.\n\n---\n\n### **Düzeltme Yöntemi**\nSQL Injection açığını önlemek için **parametrize edilmiş sorgular** (parameterized queries) kullanılmalıdır. Bu yöntem, SQL komutu ve kullanıcı girdisi arasında ayrım kurar. Python'da bu işlem şu şekilde yapılır:\n\n```python\ncursor.execute(\"SELECT * FROM users WHERE id = ?\", (user_id,))\n```\n\nBurada:\n- `?` işareti, SQL sorgusunda yer alan parametreyi temsil eder.\n- `(user_id,)` bir tuple olarak geçirilir, bu da SQLite'nin bu değeri veri olarak değil, sorgu parçası olarak algılamasını sağlar.\n\n---\n\n### **Düzeltilmiş Kod**\n```python\nfrom flask import Flask, request\nimport sqlite3\napp = Flask(__name__)\n\n@app.route(\"/user\")\ndef get_user():\n    user_id = request.args.get(\"id\")\n    conn = sqlite3.connect(\"app.db\")\n    cursor = conn.cursor()\n    cursor.execute(\"SELECT * FROM users WHERE id = ?\", (user_id,))\n    result = cursor.fetchall()\n    conn.close()\n    return str(result)\n```\n\n---\n\n### **Ekstra Güvenlik Önlemleri**\n1. **Giriş Validasyonu**: `user_id` nin sayısal bir değer olduğundan emin olun:\n   ```python\n   try:\n       user_id = int(user_id)\n   except ValueError:\n       return \"Geçersiz ID\"\n   ```\n\n2. **Veritabanı Bağlantısı Yönetimi**: `with` ifadesiyle bağlantıları otomatik kapatmak:\n   ```python\n   with sqlite3.connect(\"app.db\") as conn:\n       cursor = conn.cursor()\n       cursor.execute(\"SELECT * FROM users WHERE id = ?\", (user_id,))\n       result = cursor.fetchall()\n   ```\n\n3. **Kullanıcı Girdilerini Korumalı İşlemleme**: Her zaman kullanıcı girdilerini güvenli bir şekilde işleyin (örneğin, `sqlite3` yerine ORM'ler kullanın).\n\n---\n\n### **Sonuç**\nSQL Injection açığını önlemek için **parametrize edilmiş sorgular** kullanılmalıdır. Bu yöntem, kullanıcı girdilerini SQL komutuna doğrudan entegre etmeyi engeller ve veritabanı güvenliğini sağlar. Düzeltme işlemi, sadece sorgu yapısını değil, aynı zamanda uygulamanın genel güvenliğini de artırır.",
+  "duration_sec": 41.6,
+  "timestamp": "2026-05-03T20:20:13.404224",
+  "expected_focus": [
+    "Parameterized queries",
+    "Input validation"
+  ],
+  "ai_evaluation": {
+    "correctness": "pending",
+    "hallucination": null,
+    "security_aware": null,
+    "completeness": "pending",
+    "idiomatic": null,
+    "notes": "AI evaluation pending."
+  }
+}

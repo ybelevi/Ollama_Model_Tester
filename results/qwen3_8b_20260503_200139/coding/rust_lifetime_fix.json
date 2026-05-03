@@ -1,0 +1,20 @@
+{
+  "id": "rust_lifetime_fix",
+  "category": "coding",
+  "prompt": "Aşağıdaki Rust kodu compile etmiyor. Lifetime hatasını düzelt ve nedenini açıkla:\n\n```rust\nfn longest(x: &str, y: &str) -> &str {\n    if x.len() > y.len() { x } else { y }\n}\n\nfn main() {\n    let s1 = String::from(\"long\");\n    let result;\n    {\n        let s2 = String::from(\"short\");\n        result = longest(s1.as_str(), s2.as_str());\n    }\n    println!(\"The longest string is {}\", result);\n}\n```",
+  "response": "[TIMEOUT] Model 240 saniye içinde cevap vermedi.",
+  "duration_sec": 240.0,
+  "timestamp": "2026-05-03T20:27:18.130536",
+  "expected_focus": [
+    "Explicit lifetime annotations",
+    "'a"
+  ],
+  "ai_evaluation": {
+    "correctness": "timeout",
+    "hallucination": false,
+    "security_aware": null,
+    "completeness": "timeout",
+    "idiomatic": null,
+    "notes": "Prompt 240 sn timeout'a uğradı."
+  }
+}

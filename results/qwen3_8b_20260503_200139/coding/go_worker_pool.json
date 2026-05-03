@@ -1,0 +1,21 @@
+{
+  "id": "go_worker_pool",
+  "category": "coding",
+  "prompt": "Go dilinde thread-safe bir Worker Pool implemente et. Gorevleri bir kanaldan alıp, belirli sayıda worker işlesin. WaitGroup ile tüm işlemlerin bitmesini bekle. Graceful shutdown desteklesin. Sadece kod.",
+  "response": "To implement a **worker pool with graceful shutdown**, we need to ensure that:\n\n1. **Workers** are started and process tasks from a shared channel.\n2. **Tasks** are sent to the channel before the shutdown signal is sent.\n3. **Graceful shutdown** is handled by closing the task channel and sending a shutdown signal to the workers.\n4. The **main function** waits for all workers to finish processing.\n\n---\n\n### ✅ Final Implementation\n\n```go\npackage main\n\nimport (\n    \"sync\"\n)\n\ntype Task struct {\n    // You can define your task data here\n}\n\nfunc StartWorkerPool(numWorkers int, taskChan chan Task, shutdownChan chan struct{}, wg *sync.WaitGroup) {\n    for i := 0; i < numWorkers; i++ {\n        go func() {\n            defer wg.Done()\n            for {\n                select {\n                case task := <-taskChan:\n                    // Process the task\n                    // Example: fmt.Printf(\"Processing task: %v\\n\", task)\n                case <-shutdownChan:\n                    return\n                }\n            }\n        }()\n    }\n}\n\nfunc main() {\n    // Create channels\n    taskChan := make(chan Task, 100) // Buffered channel for efficiency\n    shutdownChan := make(chan struct{})\n\n    // Initialize WaitGroup\n    var wg sync.WaitGroup\n    wg.Add(5) // Number of workers\n\n    // Start worker pool\n    go StartWorkerPool(5, taskChan, shutdownChan, &wg)\n\n    // Send tasks to the channel\n    for i := 0; i < 10; i++ {\n        taskChan <- Task{}\n    }\n\n    // Signal workers to shutdown\n    close(taskChan)\n    shutdownChan <- struct{}{}\n\n    // Wait for all workers to finish\n    wg.Wait()\n}\n```\n\n---\n\n### 📌 Key Points\n\n- **`taskChan`** is a **buffered channel** to prevent blocking when sending tasks.\n- **`shutdownChan`** is used to signal workers to exit gracefully.\n- **`sync.WaitGroup`** ensures the main function waits for all웹 workers to finish.\n- **Graceful shutdown** is achieved by:\n  - Closing the `taskChan` to signal no more tasks.\n  - Sending a signal via `shutdownChan` to terminate the worker loops.\n\n---\n\n### 🧠 Why This Works\n\n- Workers are started in a **goroutine** and process tasks from the channel.\n- The main function sends all tasks before signaling shutdown.\n- Workers exit cleanly when they receive the shutdown signal.\n- The `WaitGroup` ensures the main function doesn’t exit until all workers are done.\n\n---\n\n### 🚀 Summary\n\nThis implementation ensures **efficient task processing** and **clean shutdown** of worker goroutines, making it suitable for applications that require **asynchronous task execution** and **controlled termination**.",
+  "duration_sec": 183.7,
+  "timestamp": "2026-05-03T20:23:17.611213",
+  "expected_focus": [
+    "channels",
+    "sync.WaitGroup",
+    "context.Context for shutdown"
+  ],
+  "ai_evaluation": {
+    "correctness": "pending",
+    "hallucination": null,
+    "security_aware": null,
+    "completeness": "pending",
+    "idiomatic": null,
+    "notes": "AI evaluation pending."
+  }
+}

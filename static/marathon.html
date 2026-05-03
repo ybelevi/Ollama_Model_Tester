@@ -102,6 +102,10 @@
             <div class="col-md-3"><strong>❓ Soru ID:</strong> <span id="currentPrompt" class="text-primary">-</span></div>
             <div class="col-md-3"><strong>🎮 GPU:</strong> <span id="currentGPU" class="text-info">-</span></div>
           </div>
+          <div class="row current-info mt-2">
+            <div class="col-md-6"><strong>⏱️ Geçen Süre:</strong> <span id="elapsedTime" class="text-success">0:00</span></div>
+            <div class="col-md-6"><strong>⏳ Tahmini Kalan:</strong> <span id="etaTime" class="text-warning">-</span></div>
+          </div>
           <div class="prompt-box" id="promptTextContainer" style="display:none;">
             <strong>📝 Soru:</strong> <span id="promptText">-</span>
           </div>
@@ -168,6 +172,7 @@
     let pollTimer = null;
     let lastModel = null;
     let lastPrompt = null;
+    let marathonStartTime = null;
 
     async function loadModels() {
       try {
@@ -266,6 +271,11 @@
           const data = await resp.json();
           if (data.status === 'running') {
             marathonId = data.marathon_id;
+            // Calculate start time from started_at
+            if (data.started_at) {
+              const startDate = new Date(data.started_at);
+              marathonStartTime = startDate.getTime();
+            }
             showProgress(data);
             startPolling();
           }
@@ -293,6 +303,7 @@
         }
         const data = await resp.json();
         marathonId = data.marathon_id;
+        marathonStartTime = Date.now();
         showProgress({ status: 'running', models_total: modelsData.length, models_completed: 0, current_model: '-', current_category: '-' });
         startPolling();
       } catch (e) {
@@ -352,6 +363,23 @@
       // Show skipped models if available
       if (data.skipped_tests && data.skipped_tests.length > 0) {
         renderSkippedModels(data.skipped_tests);
+      }
+      
+      // Update elapsed time
+      if (marathonStartTime) {
+        const elapsed = Math.floor((Date.now() - marathonStartTime) / 1000);
+        const minutes = Math.floor(elapsed / 60);
+        const seconds = elapsed % 60;
+        document.getElementById('elapsedTime').textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        
+        // Estimate remaining time
+        if (done > 0 && total > 0) {
+          const avgTimePerTest = elapsed / done;
+          const remaining = Math.round((total - done) * avgTimePerTest);
+          const remMinutes = Math.floor(remaining / 60);
+          const remSeconds = remaining % 60;
+          document.getElementById('etaTime').textContent = `${remMinutes}:${remSeconds.toString().padStart(2, '0')}`;
+        }
       }
     }
     

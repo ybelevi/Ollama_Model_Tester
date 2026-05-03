@@ -1,0 +1,21 @@
+{
+  "id": "cli_tool_python",
+  "category": "coding",
+  "prompt": "Python `argparse` ile profesyonel bir CLI aracı yaz. Subcommand'lar (`init`, `build`, `deploy`) olsun. Her subcommand'in kendi argümanları olsun. `--verbose` ve `--config` global flag'leri olsun. Ana dosya `main.py`. Sadece kod.",
+  "response": "```python\nimport argparse\n\ndef main():\n    parser = argparse.ArgumentParser(description='My CLI Tool')\n    parser.add_argument('--verbose', action='store_true', help='Enable verbose mode')\n    parser.add_argument('--config', type=str, help='Configuration file path')\n    \n    subparsers = parser.add_subparsers(dest='command')\n    \n    # init subcommand\n    init_parser = subparsers.add_parser('init', help='Initialize a new project')\n    init_parser.add_argument('--project-name', type=str, required=True, help='Name of the project')\n    init_parser.add_argument('--template', type=str, help='Template to use')\n    \n    # build subcommand\n    build_parser = subparsers.add_parser('build', help='Build the project')\n    build_parser.add_argument('--target', type=str, required=True, help='Target platform')\n    build_parser.add_argument('--output', type=str, help='Output directory')\n    \n    # deploy subcommand\n    deploy_parser = subparsers.add_parser('deploy', help='Deploy the project')\n    deploy_parser.add_argument('--server', type=str, required=True, help='Server to deploy to')\n    deploy_parser.add_argument('--env', type=str, help='Environment (dev, prod)')\n    \n    args = parser.parse_args()\n    \n    if args.command == 'init':\n        print(f\"Initializing project {args.project_name} with template {args.template}\")\n        if args.verbose:\n            print(\"Verbose mode enabled\")\n        if args.config:\n            print(f\"Using config file: {args.config}\")\n    elif args.command == 'build':\n        print(f\"Building for {args.target} to {args.output}\")\n        if args.verbose:\n            print(\"Verbose mode enabled\")\n        if args.config:\n            print(f\"Using config file: {args.config}\")\n    elif args.command == 'deploy':\n        print(f\"Deploying to {args.server} in {args.env} environment\")\n        if args.verbose:\n            print(\"Verbose mode enabled\")\n        if args.config:\n            print(f\"Using config file: {args.config}\")\n    else:\n        parser.print_help()\n\nif __name__ == '__main__':\n    main()\n```",
+  "duration_sec": 77.3,
+  "timestamp": "2026-05-03T20:29:21.024404",
+  "expected_focus": [
+    "subparsers",
+    "type validation",
+    "entry point guard"
+  ],
+  "ai_evaluation": {
+    "correctness": "pending",
+    "hallucination": null,
+    "security_aware": null,
+    "completeness": "pending",
+    "idiomatic": null,
+    "notes": "AI evaluation pending."
+  }
+}

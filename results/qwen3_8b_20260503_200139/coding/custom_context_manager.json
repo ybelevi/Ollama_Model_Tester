@@ -1,0 +1,20 @@
+{
+  "id": "custom_context_manager",
+  "category": "coding",
+  "prompt": "Python'da kendi context manager'ını yaz. Bir `DatabaseConnection` class'ı olsun. `__enter__` bağlantıyı açsın, `__exit__` exception durumunda rollback, başarılıysa commit yapsın. `contextlib.contextmanager` kullanma. Sadece kod.",
+  "response": "```python\nclass DatabaseConnection:\n    def __init__(self, db_path):\n        self.db_path = db_path\n        self.connection = None\n\n    def __enter__(self):\n        self.connection = sqlite3.connect(self.db_path)\n        return self.connection\n\n    def __exit__(self, exc_type, exc_val, exc_tb):\n        if exc_type is not None:\n            self.connection.rollback()\n        else:\n            self.connection.commit()\n        self.connection.close()\n```",
+  "duration_sec": 26.7,
+  "timestamp": "2026-05-03T20:29:48.250109",
+  "expected_focus": [
+    "__enter__/__exit__ signature",
+    "exception handling in __exit__"
+  ],
+  "ai_evaluation": {
+    "correctness": "pending",
+    "hallucination": null,
+    "security_aware": null,
+    "completeness": "pending",
+    "idiomatic": null,
+    "notes": "AI evaluation pending."
+  }
+}

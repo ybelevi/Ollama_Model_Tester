@@ -6,9 +6,9 @@
     "coding"
   ],
   "total": 46,
-  "completed": 7,
-  "timeouts": 2,
-  "current_prompt_id": "json_parser_c",
+  "completed": 14,
+  "timeouts": 3,
+  "current_prompt_id": "async_producer_consumer",
   "current_category": "coding",
   "status": "running",
   "start_time": 1777827699.6603796,
@@ -30,7 +30,21 @@
     "  -> OK (57.3s)",
     "[7/46] regex_engine_py | coding | Running...",
     "  -> TIMEOUT (240.0s / limit 240s)",
-    "[8/46] json_parser_c | coding | Running..."
+    "[8/46] json_parser_c | coding | Running...",
+    "  -> OK (200.6s)",
+    "[9/46] sql_injection_fix | coding | Running...",
+    "  -> OK (41.6s)",
+    "[10/46] go_worker_pool | coding | Running...",
+    "  -> OK (183.7s)",
+    "[11/46] rust_lifetime_fix | coding | Running...",
+    "  -> TIMEOUT (240.0s / limit 240s)",
+    "[12/46] observer_pattern_ts | coding | Running...",
+    "  -> OK (44.6s)",
+    "[13/46] cli_tool_python | coding | Running...",
+    "  -> OK (77.3s)",
+    "[14/46] custom_context_manager | coding | Running...",
+    "  -> OK (26.7s)",
+    "[15/46] async_producer_consumer | coding | Running..."
   ],
   "results_dir": "results\\qwen3_8b_20260503_200139"
 }

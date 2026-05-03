@@ -1,0 +1,21 @@
+{
+  "id": "observer_pattern_ts",
+  "category": "coding",
+  "prompt": "TypeScript'te Observer (Pub-Sub) pattern implemente et. Bir EventEmitter class olsun: `on`, `off`, `emit` metodları çalışsın. Tip güvenliği (generics) kullan. Sadece kod.",
+  "response": "```typescript\nclass EventEmitter<T> {\n  private events = new Map<string, Array<(data: T) => void>>();\n\n  on(event: string, callback: (data: T) => void): void {\n    if (!this.events.has(event)) {\n      this.events.set(event, []);\n    }\n    this.events.get(event)!.push(callback);\n  }\n\n  off(event: string, callback: (data: T) => void): void {\n    const callbacks = this.events.get(event);\n    if (callbacks) {\n      const index = callbacks.indexOf(callback);\n      if (index !== -1) {\n        callbacks.splice(index, 1);\n      }\n    }\n  }\n\n  emit(event: string, data: T): void {\n    const callbacks = this.events.get(event);\n    if (callbacks) {\n      for (const callback of callbacks) {\n        callback(data);\n      }\n    }\n  }\n}\n```",
+  "duration_sec": 44.6,
+  "timestamp": "2026-05-03T20:28:03.218936",
+  "expected_focus": [
+    "Generics",
+    "Map/Set for listeners",
+    "Type safety"
+  ],
+  "ai_evaluation": {
+    "correctness": "pending",
+    "hallucination": null,
+    "security_aware": null,
+    "completeness": "pending",
+    "idiomatic": null,
+    "notes": "AI evaluation pending."
+  }
+}
